@@ -1,0 +1,27 @@
+  <label id="bgi" text="BGI SOAP Package Beta"/>
+  <section id="bgi_ngs_mapping" name="NGS: Mapping">
+    <tool file="bgisoap/soap1.xml"/>
+    <tool file="bgisoap/soap2.xml"/>
+  </section>
+  <section name="NGS: De Novo Assembly" id="bgi_de_novo_assembly">
+    <tool file="bgisoap/soapdenovo1.xml"/>
+    <tool file="bgisoap/soapdenovo2.xml"/>
+    <label id="soapdenovo2_mods" text="SOAPdenovo2 modules"/>
+    <tool file="bgisoap/soapdenovo2_pregraph.xml"/>
+    <tool file="bgisoap/soapdenovo2_pregraph_sparse.xml"/>
+    <tool file="bgisoap/soapdenovo2_contig.xml"/>
+    <tool file="bgisoap/soapdenovo2_map.xml"/>
+    <tool file="bgisoap/soapdenovo2_scaff.xml"/>
+    <label id="soapdenovo_support " text="Supporting tools"/>
+    <tool file="bgisoap/filter.xml"/>
+    <tool file="bgisoap/kmerfreq-ha-2.0.xml"/>
+    <tool file="bgisoap/corrector-ha-2.0.xml"/>
+    <tool file="bgisoap/kmerfreq-ar-2.02.xml"/>
+    <tool file="bgisoap/corrector-ar-2.0.xml"/>
+    <tool file="bgisoap/gapcloser-1.12.xml"/>
+  </section>
+  <section id="bgi_supporting" name="NGS: Supporting Tools">
+  	<tool file="bgisoap/soap2sam.xml"/>
+    <tool file="bgisoap/sam2soap.xml"/>
+    <tool file="bgisoap/msort.xml"/>
+  </section>

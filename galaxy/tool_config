@@ -24,4 +24,5 @@
   	<tool file="bgisoap/soap2sam.xml"/>
     <tool file="bgisoap/sam2soap.xml"/>
     <tool file="bgisoap/msort.xml"/>
+    <tool file="bgisoap/extractACGT.xml"/>
   </section>

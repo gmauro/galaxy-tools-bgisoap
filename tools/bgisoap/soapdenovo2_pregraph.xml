@@ -300,7 +300,7 @@
         <conditional name="default_full_settings">
             <param name="settings_type"
                    type="select"
-                   label="SOAPdenovo2 pregraph settings to use"
+                   label="SOAPdenovo2 pregraph sparse settings to use"
                    help="Default settings is suitable for most mapping needs. If you want full control, use Full parameter list">
                 <option value="default">Default</option>
                 <option value="full">Full parameter list</option>

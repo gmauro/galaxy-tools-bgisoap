@@ -30,7 +30,8 @@
             --insert_size_upper_bound=$default_full_settings.insert_size_upper_bound
             --bubble_coverage=$default_full_settings.bubble_coverage
             --genome_size=$default_full_settings.genome_size
-            --ncpu=$default_full_settings.ncpu
+            ##Commented out to keep under local control
+            ##--ncpu=$default_full_settings.ncpu
         #end if
 
         ## Outputs
@@ -157,10 +158,11 @@
                        value="0"
                        label="Genome size"
                        help="Genome size for statistics"/>
-                <param name="ncpu"
-                       type="integer"
-                       value="8"
-                       label="Number of CPUs to use"/>
+                <!-- Commented out to keep under local control -->
+                <!--<param name="ncpu"-->
+                       <!--type="integer"-->
+                       <!--value="8"-->
+                       <!--label="Number of CPUs to use"/>-->
             </when>
         </conditional>
     </inputs>

@@ -14,7 +14,8 @@
         ## Check if using default or custom parameters
         --default_full_settings_type=$default_full_settings.settings_type
         #if $default_full_settings.settings_type == "full"
-            --ncpu=$default_full_settings.ncpu
+            ##Commented out to keep under local control
+            ##--ncpu=$default_full_settings.ncpu
             --output_gap_related_reads=$default_full_settings.output_gap_related_reads
             --kmer_r2c=$default_full_settings.kmer_r2c
         #end if
@@ -57,10 +58,11 @@
                     <option value="NO">No</option>
                     <option value="YES">Yes</option>
                 </param>
-                <param name="ncpu"
-                       type="integer"
-                       value="8"
-                       label="Number of CPUs to use"/>
+                <!-- Commented out to keep under local control -->
+                <!--<param name="ncpu"-->
+                       <!--type="integer"-->
+                       <!--value="8"-->
+                       <!--label="Number of CPUs to use"/>-->
                 <param name="kmer_r2c"
                        type="integer"
                        value="13"

@@ -4,7 +4,13 @@ A wrapper script for SOAPdenovo2 contig module
 Copyright   Peter Li - GigaScience and BGI-HK
 """
 
-import optparse, os, shutil, subprocess, sys, tempfile
+import optparse
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+
 
 def stop_err(msg):
     sys.stderr.write(msg)
@@ -15,6 +21,8 @@ def cleanup_before_exit(tmp_dir):
         shutil.rmtree(tmp_dir)
 
 def main():
+    ncpu = 4
+
     #Parse command line
     parser = optparse.OptionParser()
     #Inputs
@@ -33,7 +41,8 @@ def main():
     parser.add_option("-m", "--max_k", dest="max_k")
     parser.add_option("-e", "--weight", dest="weight")
     parser.add_option("-s", "--reads_info_file", dest="reads_info_file")
-    parser.add_option("-p", "--ncpu", dest="ncpu")
+    #Commented out to keep control
+    #parser.add_option("-p", "--ncpu", dest="ncpu")
     parser.add_option("-E", "--merge_clean_bubble", dest="merge_clean_bubble")
 
     #Outputs
@@ -78,10 +87,14 @@ def main():
     if opts.default_full_settings_type == "default":
         cmd = "SOAPdenovo-63mer_v2.0 contig -g %s" % (dirpath + "/out")
     elif opts.multi_kmer_setting == "NO" and opts.default_full_settings_type == "full":
-        cmd = "SOAPdenovo-63mer_v2.0 contig -g %s -R %s -M %s -D %s -e %s" % (dirpath + "/out", opts.resolve_repeats, opts.merge_level, opts.edge_cov_cutoff, opts.weight)
+        cmd = "SOAPdenovo-63mer_v2.0 contig -g %s -M %s -D %s -e %s" % (dirpath + "/out", opts.merge_level, opts.edge_cov_cutoff, opts.weight)
+        if opts.resolve_repeats == "YES":
+            cmd = cmd + " -R"
     else:
-        cmd = "SOAPdenovo-63mer_v2.0 contig -g %s -R %s -M %s -D %s -e %s -m %s -s %s -p %s -E %s" % (dirpath + "/out", opts.resolve_repeats, opts.merge_level, opts.edge_cov_cutoff, opts.weight, opts.max_k, opts.reads_info_file, opts.ncpu, opts.merge_clean_bubble)
-    
+        cmd = "SOAPdenovo-63mer_v2.0 contig -g %s -M %s -D %s -e %s -m %s -s %s -p %s -E %s" % (dirpath + "/out", opts.merge_level, opts.edge_cov_cutoff, opts.weight, opts.max_k, opts.reads_info_file, ncpu, opts.merge_clean_bubble)
+        if opts.resolve_repeats == "YES":
+            cmd = cmd + " -R"
+
     #print cmd
 
     #Perform SOAPdenovo2_contig analysis
@@ -123,35 +136,35 @@ def main():
 
     #Read soap config file into its output
     contig_index_out = open(opts.contig_index, 'w')
-    file = open(dirpath + "/out.ContigIndex")
-    for line in file:
+    f = open(dirpath + "/out.ContigIndex")
+    for line in f:
         contig_index_out.write(line)
     contig_index_out.close()
-    file.close()
+    f.close()
 
     #Read soap config file into its output
     arc_out = open(opts.arc, 'w')
-    file = open(dirpath + "/out.Arc")
-    for line in file:
+    f = open(dirpath + "/out.Arc")
+    for line in f:
         arc_out.write(line)
     arc_out.close()
-    file.close()
+    f.close()
 
     #Read soap config file into its output
     contig_out = open(opts.contig, 'w')
-    file = open(dirpath + "/out.contig")
-    for line in file:
+    f = open(dirpath + "/out.contig")
+    for line in f:
         contig_out.write(line)
     contig_out.close()
-    file.close()
+    f.close()
 
     #Read soap config file into its output
     edge_out = open(opts.updated_edge, 'w')
-    file = open(dirpath + "/out.updated.edge")
-    for line in file:
+    f = open(dirpath + "/out.updated.edge")
+    for line in f:
         edge_out.write(line)
     edge_out.close()
-    file.close()
+    f.close()
 
     #Clean up temp files
     cleanup_before_exit(dirpath)

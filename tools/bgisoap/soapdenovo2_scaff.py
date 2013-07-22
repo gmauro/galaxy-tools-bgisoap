@@ -4,7 +4,13 @@ A wrapper script for SOAPdenovo2 scaff module
 Copyright   Peter Li - GigaScience and BGI-HK
 """
 
-import optparse, os, shutil, subprocess, sys, tempfile
+import optparse
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+
 
 def stop_err(msg):
     sys.stderr.write(msg)
@@ -15,6 +21,8 @@ def cleanup_before_exit(tmp_dir):
         shutil.rmtree(tmp_dir)
 
 def main():
+    ncpu = 4
+
     #Parse command line
     parser = optparse.OptionParser()
     #Inputs
@@ -92,22 +100,22 @@ def main():
     contig_file.close()
 
     read_in_gap_out = open(dirpath + "/out.readInGap.gz", "wb")
-    with open(opts.read_in_gap, mode='rb') as file:  # b is important -> binary
-        fileContent = file.read()
+    with open(opts.read_in_gap, mode='rb') as f:  # b is important -> binary
+        fileContent = f.read()
         read_in_gap_out.write(fileContent)
     read_in_gap_out.close()
-    file.close()
+    f.close()
 
     #Create symlink
     os.symlink(dirpath + "/out.readInGap.gz", dirpath + "/out.readInGap")
 
 
     read_on_contig_out = open(dirpath + "/out.readOnContig.gz", "wb")
-    with open(opts.read_on_contig, mode='rb') as file:  # b is important -> binary
-        fileContent = file.read()
+    with open(opts.read_on_contig, mode='rb') as f:  # b is important -> binary
+        fileContent = f.read()
         read_on_contig_out.write(fileContent)
     read_on_contig_out.close()
-    file.close()
+    f.close()
 
     #Create symlink
     os.symlink(dirpath + "/out.readOnContig.gz", dirpath + "/out.readOnContig")
@@ -117,7 +125,9 @@ def main():
     if opts.default_full_settings_type == "default":
         cmd = "SOAPdenovo-63mer_v2.0 scaff -g %s -F" % (dirpath + "/out")
     elif opts.default_full_settings_type == "full":
-        cmd = "SOAPdenovo-63mer_v2.0 scaff -g %s -F %s -u %s -w %s -V %s -G %s -L %s -c %s -C %s -b %s -B %s -N %s -p %s" % (dirpath + "/out", opts.fill_gaps, opts.unmask_contigs, opts.keep_contigs_connected, opts.ass_visual, opts.gap_len_diff,  opts.min_contig_len, opts.min_contig_cvg, opts.max_contig_cvg, opts.insert_size_upper_bound, opts.bubble_coverage, opts.genome_size, opts.ncpu)
+        cmd = "SOAPdenovo-63mer_v2.0 scaff -g %s -u %s -w %s -V %s -G %s -L %s -c %s -C %s -b %s -B %s -N %s -p %s" % (dirpath + "/out", opts.unmask_contigs, opts.keep_contigs_connected, opts.ass_visual, opts.gap_len_diff,  opts.min_contig_len, opts.min_contig_cvg, opts.max_contig_cvg, opts.insert_size_upper_bound, opts.bubble_coverage, opts.genome_size, ncpu)
+        if opts.fill_gaps == "YES":
+            cmd = cmd + " -F"
 
     #print cmd
 
@@ -162,67 +172,67 @@ def main():
 
     #Read soap config file into its output
     new_contig_index_out = open(opts.new_contig_index, 'wb')
-    file = open(dirpath + "/out.newContigIndex")
-    for line in file:
+    f = open(dirpath + "/out.newContigIndex")
+    for line in f:
         new_contig_index_out.write(line)
     new_contig_index_out.close()
-    file.close()
+    f.close()
 
     links_out = open(opts.links, 'wb')
-    file = open(dirpath + "/out.links")
-    for line in file:
+    f = open(dirpath + "/out.links")
+    for line in f:
         links_out.write(line)
     links_out.close()
-    file.close()
+    f.close()
 
     scaf_gap_out = open(opts.scaf_gap, 'wb')
-    file = open(dirpath + "/out.scaf_gap")
-    for line in file:
+    f = open(dirpath + "/out.scaf_gap")
+    for line in f:
         scaf_gap_out.write(line)
     scaf_gap_out.close()
-    file.close()
+    f.close()
 
     gap_seq_out = open(opts.gap_seq, 'wb')
-    file = open(dirpath + "/out.gapSeq")
-    for line in file:
+    f = open(dirpath + "/out.gapSeq")
+    for line in f:
         gap_seq_out.write(line)
     gap_seq_out.close()
-    file.close()
+    f.close()
 
     scaf_out = open(opts.scaf, 'wb')
-    file = open(dirpath + "/out.scaf")
-    for line in file:
+    f = open(dirpath + "/out.scaf")
+    for line in f:
         scaf_out.write(line)
     scaf_out.close()
-    file.close()
+    f.close()
 
     scaf_seq_out = open(opts.scaf_seq, 'wb')
-    file = open(dirpath + "/out.scafSeq")
-    for line in file:
+    f = open(dirpath + "/out.scafSeq")
+    for line in f:
         scaf_seq_out.write(line)
     scaf_seq_out.close()
-    file.close()
+    f.close()
 
     contig_positions_scaff_out = open(opts.contig_positions_scaff, 'wb')
-    file = open(dirpath + "/out.contigPosInscaff")
-    for line in file:
+    f = open(dirpath + "/out.contigPosInscaff")
+    for line in f:
         contig_positions_scaff_out.write(line)
     contig_positions_scaff_out.close()
-    file.close()
+    f.close()
 
     bubble_in_scaff_out = open(opts.bubble_in_scaff, 'wb')
-    file = open(dirpath + "/out.bubbleInScaff")
-    for line in file:
+    f = open(dirpath + "/out.bubbleInScaff")
+    for line in f:
         bubble_in_scaff_out.write(line)
     bubble_in_scaff_out.close()
-    file.close()
+    f.close()
 
     scaf_stats_out = open(opts.scaf_stats, 'wb')
-    file = open(dirpath + "/out.scafStatistics")
-    for line in file:
+    f = open(dirpath + "/out.scafStatistics")
+    for line in f:
         scaf_stats_out.write(line)
     scaf_stats_out.close()
-    file.close()
+    f.close()
 
     #Clean up temp files
     cleanup_before_exit(dirpath)

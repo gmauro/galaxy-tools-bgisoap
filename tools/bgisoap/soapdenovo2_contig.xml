@@ -29,7 +29,8 @@
             #if $default_full_settings.multi_kmer.multi_kmer_setting == "YES"
             	--max_k=$default_full_settings.multi_kmer.max_k
             	--reads_info_file=$default_full_settings.multi_kmer.reads_info_file
-            	--ncpu=$default_full_settings.multi_kmer.ncpu
+                ##Commented out to keep control
+            	##--ncpu=$default_full_settings.multi_kmer.ncpu
             	--merge_clean_bubble=$default_full_settings.multi_kmer.merge_clean_bubble
             #end if
         #end if
@@ -105,10 +106,11 @@
                 	   type="data"
                 	   format="input"
                	       label="Information on solexa reads required for when multi-kmer is used"/>
-            	<param name="ncpu"
-                	   type="integer"
-                	   value="8"
-                	   label="Number of CPUs to use"/>
+                <!-- Commented out to keep thread number under control -->
+            	<!--<param name="ncpu"-->
+                	   <!--type="integer"-->
+                	   <!--value="8"-->
+                	   <!--label="Number of CPUs to use"/>-->
             	<param name="merge_clean_bubble"
                 	   type="select"
                 	   optional="true"

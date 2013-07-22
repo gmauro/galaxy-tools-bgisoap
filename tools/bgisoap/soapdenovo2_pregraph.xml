@@ -71,18 +71,19 @@
             #end for
         #end if
 
+        ## Mandatory params
+        --kmer_size=$kmer_size
+        ## Commented out to keep control of thread number
+        ##--ncpu=$ncpu
+        --kmer_freq_cutoff=$kmer_freq_cutoff
+
         ## Check if using default or custom parameters
         --default_full_settings_type=$default_full_settings.settings_type
         #if $default_full_settings.settings_type == "full"
-            --ncpu=$default_full_settings.ncpu
             --init_memory_assumption=$default_full_settings.init_memory_assumption
             --output_extra_info=$default_full_settings.output_extra_info
-            --kmer_freq_cutoff=$default_full_settings.kmer_freq_cutoff
         #end if
 
-        ## Need to decide either SOAPdenovo-63mer or SOAPdenovo-127mer to use 
-        --kmer_size=$kmer_size
-        
         ## Multiple output files
         --kmer_freq=$kmer_freq
         --edge=$edge ## This is a gzipped binary file
@@ -278,6 +279,23 @@
             </when>
         </conditional>
 
+        <!-- Mandatory parameters -->
+        <param name="kmer_size"
+               type="integer"
+               value="23"
+               label="k-value in kmer"
+               min="13"
+               max="127"/>
+        <!-- Commented out to keep control of thread number -->
+        <!--<param name="ncpu"-->
+        <!--type="integer"-->
+        <!--value="2"-->
+        <!--label="Number of CPUs"/>-->
+        <param name="kmer_freq_cutoff"
+               type="integer"
+               value="0"
+               label="Delete kmers with frequency no larger than?"/>
+
         <!--Other parameters -->
         <conditional name="default_full_settings">
             <param name="settings_type"
@@ -289,10 +307,6 @@
             </param>
             <when value="default"/>
             <when value="full">
-                <param name="ncpu"
-                       type="integer"
-                       value="2"
-                       label="Number of CPUs to use"/>
                 <param name="init_memory_assumption"
                        type="integer"
                        label="Initialize memory assumption to avoid further reallocation, unit GB"
@@ -304,18 +318,8 @@
                     <option value="NO">No</option>
                     <option value="YES">Yes</option>
                 </param>
-                <param name="kmer_freq_cutoff"
-                       type="integer"
-                       value="0"
-                       label="K-mer frequency limit. K-mers with higher frequencies will  be removed from processing"/>
             </when>
         </conditional>
-        <param name="kmer_size"
-             type="integer"
-             value="23"
-             label="k value in kmer"
-             min="13"
-             max="127"/>
     </inputs>
     <outputs>
         <data name="kmer_freq"

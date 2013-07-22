@@ -37,6 +37,8 @@ def cleanup_before_exit(tmp_dir):
 
 
 def main():
+    ncpu = 4
+
     #Parse command line
     parser = optparse.OptionParser()
     parser.add_option('', '--file_source', dest='file_source')
@@ -80,14 +82,15 @@ def main():
     #Mandatory params
     parser.add_option("-K", "--kmer_size", dest="kmer_size")
     parser.add_option("-z", "--genome_size", dest="genome_size")
+    parser.add_option("-d", "--kmer_freq_cutoff", dest="kmer_freq_cutoff")
+    #Commented out to keep under local control
+    #parser.add_option("-p", "--ncpu", dest="ncpu")
 
     #Optional params
     parser.add_option("-g", "--max_kmer_edge_length", dest="max_kmer_edge_length")
-    parser.add_option("-d", "--kmer_freq_cutoff", dest="kmer_freq_cutoff")
     parser.add_option("-e", "--kmer_edge_freq_cutoff", dest="kmer_edge_freq_cutoff")
     parser.add_option("-R", "--output_extra_info", dest="output_extra_info")
     parser.add_option("-r", "--runmode", dest="runmode")
-    parser.add_option("-p", "--ncpu", dest="ncpu")
 
     #HTML output
     parser.add_option("", "--html_file", dest="html_file")
@@ -205,13 +208,13 @@ def main():
 
     #Set up command line call
     if int(opts.kmer_size) <= 63 and opts.default_full_settings_type == "default":
-        cmd = "Pregraph_Sparse_63mer.v1.0.3 -s %s -K %s -z %s -o %s" % (config_file, opts.kmer_size, opts.genome_size, files_dir + "/out")
+        cmd = "Pregraph_Sparse_63mer.v1.0.3 -s %s -K %s -z %s -o %s -d %s" % (config_file, opts.kmer_size, opts.genome_size, files_dir + "/out", opts.kmer_freq_cutoff)
     elif int(opts.kmer_size) <= 63 and opts.default_full_settings_type == "full":
-        cmd = "Pregraph_Sparse_63mer.v1.0.3 -s %s -K %s -z %s -o %s -g %s -d %s -e %s -R %s -r %s -p %s" % (config_file, opts.kmer_size, opts.genome_size, files_dir + "/out", opts.max_kmer_edge_length, opts.kmer_freq_cutoff, opts.kmer_edge_freq_cutoff, opts.output_extra_info, opts.runmode, opts.ncpu)
+        cmd = "Pregraph_Sparse_63mer.v1.0.3 -s %s -K %s -z %s -o %s -d %s -g %s -e %s -R %s -r %s -p %s" % (config_file, opts.kmer_size, opts.genome_size, files_dir + "/out", opts.kmer_freq_cutoff, opts.max_kmer_edge_length, opts.kmer_edge_freq_cutoff, opts.output_extra_info, opts.runmode, ncpu)
     elif int(opts.kmer_size) > 63 and opts.default_full_settings_type == "default":
-        cmd = "Pregraph_Sparse_127mer.v1.0.3 -s %s -K %s -z %s -o %s" % (config_file, opts.kmer_size, opts.genome_size, files_dir + "/out")
+        cmd = "Pregraph_Sparse_127mer.v1.0.3 -s %s -K %s -z %s -o %s -d %s" % (config_file, opts.kmer_size, opts.genome_size, files_dir + "/out", opts.kmer_freq_cutoff)
     elif int(opts.kmer_size) > 63 and opts.default_full_settings_type == "full":
-        cmd = "Pregraph_Sparse_127mer.v1.0.3 -s %s -K %s -z %s -o %s -g %s -d %s -e %s -R %s -r %s -p %s" % (config_file, opts.kmer_size, opts.genome_size, files_dir + "/out", opts.max_kmer_edge_length, opts.kmer_freq_cutoff, opts.kmer_edge_freq_cutoff, opts.output_extra_info, opts.runmode, opts.ncpu)
+        cmd = "Pregraph_Sparse_127mer.v1.0.3 -s %s -K %s -z %s -o %s -g %s -d %s -e %s -R %s -r %s -p %s" % (config_file, opts.kmer_size, opts.genome_size, files_dir + "/out", opts.max_kmer_edge_length, opts.kmer_freq_cutoff, opts.kmer_edge_freq_cutoff, opts.output_extra_info, opts.runmode, ncpu)
 
     # print cmd
 
@@ -257,46 +260,46 @@ def main():
 
     #Read files into their outputs
     kmer_freq_out = open(opts.kmer_freq, 'wb')
-    file = open(files_dir + "/out.kmerFreq")
-    for line in file:
+    f = open(files_dir + "/out.kmerFreq")
+    for line in f:
         kmer_freq_out.write(line)
     kmer_freq_out.close()
-    file.close()
+    f.close()
 
     edge_gz_out = open(opts.edge, 'wb')
-    with open(files_dir + "/out.edge.gz", mode='rb') as file: # b is important -> binary
-        fileContent = file.read()
+    with open(files_dir + "/out.edge.gz", mode='rb') as f: # b is important -> binary
+        fileContent = f.read()
         edge_gz_out.write(fileContent)
     edge_gz_out.close()
-    file.close()
+    f.close()
 
     pre_arc_out = open(opts.pre_arc, 'wb')
-    file = open(files_dir + "/out.preArc")
-    for line in file:
+    f = open(files_dir + "/out.preArc")
+    for line in f:
         pre_arc_out.write(line)
     pre_arc_out.close()
-    file.close()
+    f.close()
 
     vertex_out = open(opts.vertex, 'wb')
-    file = open(files_dir + "/out.vertex")
-    for line in file:
+    f = open(files_dir + "/out.vertex")
+    for line in f:
         vertex_out.write(line)
     vertex_out.close()
-    file.close()
+    f.close()
 
     pregraph_basic_out = open(opts.pregraph_basic, 'wb')
-    file = open(files_dir + "/out.preGraphBasic")
-    for line in file:
+    f = open(files_dir + "/out.preGraphBasic")
+    for line in f:
         pregraph_basic_out.write(line)
     pregraph_basic_out.close()
-    file.close()
+    f.close()
 
     config_out = open(opts.soap_config, 'w')
-    file = open(config_file)
-    for line in file:
+    f = open(config_file)
+    for line in f:
         config_out.write(line)
     config_out.close()
-    file.close()
+    f.close()
 
     #Delete files not being linked on web page
     os.remove(files_dir + "/out.kmerFreq")
@@ -305,9 +308,9 @@ def main():
     os.remove(files_dir + "/out.vertex")
     os.remove(files_dir + "/out.preGraphBasic")
     files = os.listdir(files_dir)
-    for file in files:
-        if file.startswith("tmp"):
-            os.remove(os.path.join(files_dir, file))
+    for f in files:
+        if f.startswith("tmp"):
+            os.remove(os.path.join(files_dir, f))
 
     #Generate html
     html_report_from_directory(open(html_file, 'w'), files_dir)

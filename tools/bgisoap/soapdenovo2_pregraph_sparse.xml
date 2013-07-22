@@ -71,20 +71,21 @@
           #end for
         #end if
 
+        ## Mandatory params
+        --kmer_size=$kmer_size
+        ## Commented out to keep control of thread number
+        ##--ncpu=$ncpu
+        --kmer_freq_cutoff=$kmer_freq_cutoff
+        --genome_size=$genome_size
+
         ## Check if using default or custom parameters
         --default_full_settings_type=$default_full_settings.settings_type
         #if $default_full_settings.settings_type == "full"
           --max_kmer_edge_length=$default_full_settings.max_kmer_edge_length
-          --kmer_freq_cutoff=$default_full_settings.kmer_freq_cutoff
           --kmer_edge_freq_cutoff=$default_full_settings.kmer_edge_freq_cutoff
           --runmode=$default_full_settings.runmode
-          --ncpu=$default_full_settings.ncpu
+          --output_extra_info=$output_extra_info
         #end if
-
-        ## Need to decide either SOAPdenovo-63mer or SOAPdenovo-127mer to use
-        --kmer_size=$kmer_size
-        --genome_size=$genome_size
-        --output_extra_info=$output_extra_info
 
         ##HTML output
         --html_file=$html_file
@@ -286,25 +287,35 @@
                 </repeat>
             </when>
         </conditional>
+        ## Mandatory params
+        --kmer_size=$kmer_size
+        ## Commented out to keep control of thread number
+        ##--ncpu=$ncpu
+        --kmer_freq_cutoff=$kmer_freq_cutoff
+        --genome_size=$genome_size
         <param name="kmer_size"
                type="integer"
                value="23"
                label="k value in kmer"
                min="13"
                max="127"/>
+        <!-- Commented out to keep under local control -->
+        <!--<param name="ncpu"-->
+               <!--type="integer"-->
+               <!--value="2"-->
+               <!--label="Number of CPUs to use"/>-->
+        <param name="kmer_freq_cutoff"
+               type="integer"
+               value="1"
+               label="Kmer frequency cutoff"
+               help="Kmers with a frequency smaller than this value will be deleted"/>
         <param name="genome_size"
                type="integer"
                label="Estimated genome size"
                value="5000"
                max="50000"
                help="Only a reduced value is allowed due to memory limitations on this server"/>
-        <param name="output_extra_info"
-               type="select"
-               value="NO"
-               label="Output extra information for resolving repeats in the contig step">
-            <option value="NO">No</option>
-            <option value="YES">Yes</option>
-        </param>
+
         <!--Other parameters -->
         <conditional name="default_full_settings">
             <param name="settings_type"
@@ -322,17 +333,11 @@
                        label="Number of skipped intermediate kmers"
                        min="1"
                        max="25"/>
-                <param name="kmer_freq_cutoff"
-                       type="integer"
-                       value="1"
-                       label="Kmer frequency cutoff"
-                       help="Kmers with a frequency smaller than this value will be deleted"/>
                 <param name="kmer_edge_freq_cutoff"
                        type="integer"
                        value="1"
                        label="Kmer edge frequency cutoff"
                        help="Edges relating to Kmers with a frequency smaller than this value will be deleted"/>
-
                 <param name="runmode"
                        type="select"
                        value="0">
@@ -340,12 +345,15 @@
                     <option value="1">Load graph by prefix, build edge and preArc</option>
                     <option value="2">Build graph only</option>
                     <option value="3">Build edges only</option>
-                    <option value="3">Build preArcs only</option>
+                    <option value="4">Build preArcs only</option>
                 </param>
-                <param name="ncpu"
-                       type="integer"
-                       value="2"
-                       label="Number of CPUs to use"/>
+                <param name="output_extra_info"
+                       type="select"
+                       value="NO"
+                       label="Output extra information for resolving repeats in the contig step">
+                    <option value="NO">No</option>
+                    <option value="YES">Yes</option>
+                </param>
             </when>
         </conditional>
     </inputs>

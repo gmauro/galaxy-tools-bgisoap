@@ -113,7 +113,7 @@ def main():
         if opts.length_trim_low_qual_ends != "":
             cmd =  cmd + " -x %s" % opts.length_trim_low_qual_ends
 
-    print "Command executed: ", cmd
+    #print "Command executed: ", cmd
 
     #Execute Corrector
     try:
@@ -156,30 +156,29 @@ def main():
     xlspath = opts.filelist + ".QC.xls"
     shutil.move(xlspath, files_dir)
 
-    #Create outputs; need to move and rename files for galaxy for display multiple files
-    #print "Reading filelist contents"
-    file = open(opts.filelist)
+    #Need to move and rename files for galaxy for display multiple files
+    filelist = open(opts.filelist)
 
     #Check file format
-    format = ""
+    fileformat = ""
     if opts.default_full_settings_type == "default":
-        format = ".fq.gz"
+        fileformat = ".fq.gz"
     elif opts.default_full_settings_type == "full":
         if opts.output_format == "0":
-            format = ".fa.gz"
+            fileformat = ".fa.gz"
         elif opts.output_format =="1":
-            format = ".fq.gz"
+            fileformat = ".fq.gz"
         elif opts.output_format =="2":
-            format = ".fa"
+            fileformat = ".fa"
         elif opts.output_format =="3":
-            format = ".fq"
+            fileformat = ".fq"
 
     #Read file paths in read.lst
     pair_index = 1
-    for path in file:
+    for path in filelist:
         #print "path:", path
         #Read corrected forward and reverse files into outputs
-        source = path.rstrip() + ".cor.pair_" + str(pair_index) + format
+        source = path.rstrip() + ".cor.pair_" + str(pair_index) + fileformat
         if fnmatch.fnmatch(source, '*pair_1*'):
             corrected_forward_in = open(opts.corrected_forward, 'w')
             file_out = open(source, 'r')
@@ -214,13 +213,13 @@ def main():
         pair_index = pair_index + 1
         if pair_index == 3:
             pair_index = 1
-    file.close()
+    filelist.close()
 
     #Generate html
     html_report_from_directory(open(html_file, 'wb'), files_dir)
 
     #Clean up temp files
-    cleanup_before_exit(dirpath)
+    cleanup_before_exit(tmp_dir)
     #Check results in output file
     if os.path.getsize(opts.html_file) > 0:
         sys.stdout.write('Status complete')

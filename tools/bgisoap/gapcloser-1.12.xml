@@ -334,19 +334,20 @@ to be about 200 GB and GapCloser required about 1 day to process the YH dataset.
 Two outputs are produced by GapCloser:
 
 1. A file containing scaffold sequences with gaps filled were possible.
+
 2. A fill file providing information about the gaps in the scaffolds. The
-first column is the starting position of a gap in the output sequence. The
-second column denotes the end position. The third and fourth columns are the
-length of sequences extending separately from the left and right boundaries
-of a gap. The status of the gaps can be seen from the fifth column of the
-file. If a gap was closed through the overlapping of Kmers, the flag is
-set to 1, otherwise it is set to 0. The sixth column shows the length of the
-gap sequence with relative high accuracy. The seventh column provides the
-original gap size. The eighth column is the final gap size. If the gap was
-closed then the value of the fifth column is 1 which is the value of the
-length of gap sequence. Otherwise, the value is equal to the value of the
-seventh column or is 1 bp longer than it was when the value of the seventh
-column is 1.
+   first column is the starting position of a gap in the output sequence. The
+   second column denotes the end position. The third and fourth columns are the
+   length of sequences extending separately from the left and right boundaries
+   of a gap. The status of the gaps can be seen from the fifth column of the
+   file. If a gap was closed through the overlapping of Kmers, the flag is
+   set to 1, otherwise it is set to 0. The sixth column shows the length of the
+   gap sequence with relative high accuracy. The seventh column provides the
+   original gap size. The eighth column is the final gap size. If the gap was
+   closed then the value of the fifth column is 1 which is the value of the
+   length of gap sequence. Otherwise, the value is equal to the value of the
+   seventh column or is 1 bp longer than it was when the value of the seventh
+   column is 1.
 
 -----
 

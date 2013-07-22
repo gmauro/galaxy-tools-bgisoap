@@ -3,14 +3,13 @@
     <command interpreter="perl">get_scaftig.pl $scafseq_gc_fa > "$scafseq_gc_ctg_fa"</command>
     <inputs>
     <param name="scafseq_gc_fa"
-            format="fasta"
                type="data"
-               label="scafseq.GC.fa"/>
+               label="scaffolds"/>
     </inputs>
     <outputs>
         <data name="scafseq_gc_ctg_fa"
-              format="fasta"
-              label="scafseq.gc.ctg.fa"/>
+              format="txt"
+              label="contigs"/>
     </outputs>
     <tests>
     </tests>

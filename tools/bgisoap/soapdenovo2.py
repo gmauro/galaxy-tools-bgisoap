@@ -5,7 +5,13 @@ Peter Li - GigaScience and BGI-HK
 Huayan Gao - CUHK
 """
 
-import optparse, os, shutil, subprocess, sys, tempfile
+import optparse
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+
 
 def stop_err(msg):
     sys.stderr.write(msg)
@@ -16,6 +22,9 @@ def cleanup_before_exit(tmp_dir):
         shutil.rmtree(tmp_dir)
 
 def main():
+    #Thread number
+    ncpu = 4
+
     #Parse command line
     parser = optparse.OptionParser()
     parser.add_option("", "--max_read_length", dest="max_read_length")
@@ -34,35 +43,47 @@ def main():
     #Data inputs
     parser.add_option("", "--type_of_data", action="append", type="string", dest="type_of_data_list")
     parser.add_option("", "--format_of_data", action="append", type="string", dest="format_of_data_list")
+
     parser.add_option("", "--single_fastq_input1", action="append", type="string", dest="single_fastq_input1_list")
+    parser.add_option("", "--single_fastq_gzipped_input1", action="append", type="string", dest="single_fastq_gzipped_input1_list")
     parser.add_option("", "--single_fasta_input1", action="append", type="string", dest="single_fasta_input1_list")
+    parser.add_option("", "--single_fasta_gzipped_input1", action="append", type="string", dest="single_fasta_gzipped_input1_list")
     parser.add_option("", "--single_bam_input1", action="append", type="string", dest="single_bam_input1_list")
 
     parser.add_option("", "--paired_fastq_input1", action="append", type="string", dest="paired_fastq_input1_list")
     parser.add_option("", "--paired_fastq_input2", action="append", type="string", dest="paired_fastq_input2_list")
     parser.add_option("", "--paired_fasta_input1", action="append", type="string", dest="paired_fasta_input1_list")
     parser.add_option("", "--paired_fasta_input2", action="append", type="string", dest="paired_fasta_input2_list")
+
+    parser.add_option("", "--paired_fastq_gzipped_input1", action="append", type="string", dest="paired_fastq_gzipped_input1_list")
+    parser.add_option("", "--paired_fastq_gzipped_input2", action="append", type="string", dest="paired_fastq_gzipped_input2_list")
+    parser.add_option("", "--paired_fasta_gzipped_input1", action="append", type="string", dest="paired_fasta_gzipped_input1_list")
+    parser.add_option("", "--paired_fasta_gzipped_input2", action="append", type="string", dest="paired_fasta_gzipped_input2_list")
+
     parser.add_option("", "--paired_bam_input1", action="append", type="string", dest="paired_bam_input1_list")
     parser.add_option("", "--paired_bam_input2", action="append", type="string", dest="paired_bam_input2_list")
 
     parser.add_option("", "--analysis_settings_type", dest="analysis_settings_type")
     parser.add_option("", "--default_full_settings_type", dest="default_full_settings_type")
 
-    #Custom params
+    #Mandatory params
     parser.add_option("-K", "--kmer_size", dest="kmer_size")
-    parser.add_option("-p", "--ncpu", dest="ncpu")
-    parser.add_option("-a", "--init_memory_assumption", dest="init_memory_assumption")
+    #Commented out to keep control of thread number
+    #parser.add_option("-p", "--ncpu", dest="ncpu")
     parser.add_option("-d", "--kmer_freq_cutoff", dest="kmer_freq_cutoff")
     parser.add_option("-R", "--resolve_repeats", dest="resolve_repeats")
+    parser.add_option("-F", "--fill_gaps", dest="fill_gaps")
+
+    #Custom params
+    parser.add_option("-a", "--init_memory_assumption", dest="init_memory_assumption")
     parser.add_option("-D", "--edge_cov_cutoff", dest="edge_cov_cutoff")
     parser.add_option("-M", "--merge_level", dest="merge_level")
     parser.add_option("-m", "--max_k", dest="max_k")
+    parser.add_option("-E", "--merge_clean_bubble", dest="merge_clean_bubble")
     parser.add_option("-e", "--weight", dest="weight")
     #parser.add_option("-r", "--keep_avail_read", dest="keep_avail_read")
-    parser.add_option("-E", "--merge_clean_bubble", dest="merge_clean_bubble")
     #parser.add_option("-f", "--output_gap_related_reads", dest="output_gap_related_reads")
     parser.add_option("-k", "--kmer_r2c", dest="kmer_r2c")
-    parser.add_option("-F", "--fill_gaps", dest="fill_gaps")
     parser.add_option("-u", "--unmask_contigs", dest="unmask_contigs")
     parser.add_option("-w", "--keep_contigs_connected", dest="keep_contigs_connected")
     parser.add_option("-G", "--gap_len_diff", dest="gap_len_diff")
@@ -89,18 +110,28 @@ def main():
         #Create temp file for configuration
         config_file = tempfile.NamedTemporaryFile(dir=tmp_dir).name
         try:
-            fout = open(config_file,'wb')
+            fout = open(config_file, 'w')
             fout.write("max_rd_len=%s\n" % opts.max_read_length)
             #Calculate how sets of data there are - use avg_ins as a measure of this
-            #Loop thru this number of times
-            #Also use separate index to keep count of reads
+            #Variables to keep count of different single file types
             single_read_index = 0
+            fastq_single_read_index = 0
+            fastq_gz_single_read_index = 0
+            fasta_single_read_index = 0
+            fasta_gz_single_read_index = 0
+            bam_single_read_index = 0
+
+            #Variables to keep count of different paired file types
             paired_read_index = 0
+            fastq_paired_read_index = 0
+            fastq_gz_paired_read_index = 0
+            fasta_paired_read_index = 0
+            fasta_gz_paired_read_index = 0
+            bam_paired_read_index = 0
+
             for index in range(len(opts.avg_insert_list)):
-#                print "single_read_index ", single_read_index
-#                print "paired_read_index ", paired_read_index
                 fout.write("[LIB]\n")
-                fout.write("avg_ins=%s\n" % (opts.avg_insert_list)[index])
+                fout.write("avg_ins=%s\n" % opts.avg_insert_list[index])
                 fout.write("reverse_seq=%s\n" % opts.reverse_seq_list[index])
                 fout.write("asm_flags=%s\n" % opts.asm_flags_list[index])
                 fout.write("rd_len_cutoff=%s\n" % opts.rd_len_cutoff_list[index])
@@ -108,44 +139,91 @@ def main():
                 fout.write("pair_num_cutoff=%s\n" % opts.pair_num_cutoff_list[index])
                 fout.write("map_len=%s\n" % opts.map_len_list[index])
                 #Add data file configuration - needs careful looping due to single and paired reads
-#                print opts.type_of_data_list[index]
-#                print opts.format_of_data_list[index]
-                if opts.type_of_data_list[index] == "single":  #then only one read
-                    if (opts.format_of_data_list)[index] == "fastq":
-                        fout.write("q=%s\n" % (opts.single_fastq_input1_list)[single_read_index])
-                    elif opts.format_of_data == "fasta":
-                        fout.write("f=%s\n" % opts.single_fasta_input1_list[single_read_index])
+                if opts.type_of_data_list[index] == "single":
+                    if opts.format_of_data_list[index] == "fastq":
+                        fout.write("q=%s\n" % opts.single_fastq_input1_list[fastq_single_read_index])
+                        fastq_single_read_index = + 1
+                    elif opts.format_of_data_list[index] == "fastq_gzipped":
+                        #Copy file into temp directory and add gz suffix
+                        print "File: ", opts.single_fastq_gzipped_input1_list[fastq_gz_single_read_index]
+                        shutil.copy2(tmp_dir, opts.single_fastq_gzipped_input1_list[fastq_gz_single_read_index] + '.gz')
+                        fout.write("f=" + tmp_dir + "%s.gz\n" % opts.single_fastq_gzipped_input1_list[fastq_gz_single_read_index])
+                    elif opts.format_of_data_list[index] == "fasta":
+                        fout.write("f=%s\n" % opts.single_fasta_input1_list[fasta_single_read_index])
+                    elif opts.format_of_data_list[index] == "fasta_gzipped":
+                        #Copy file into temp directory and give it a gz suffix
+                        shutil.copy2(opts.single_fasta_gzipped_input1_list[fasta_gz_single_read_index], opts.single_fasta_gzipped_input1_list[fasta_gz_single_read_index] + '.gz')
+                        fout.write("f=" + "%s.fa.gz\n" % opts.single_fasta_gzipped_input1_list[fasta_gz_single_read_index])
                     else:
-                        fout.write("b=%s\n" % opts.single_bam_input1_list[single_read_index])
-                    single_read_index = single_read_index + 1
+                        fout.write("b=%s\n" % opts.single_bam_input1_list[bam_single_read_index])
+                    single_read_index += 1
                 elif opts.type_of_data_list[index] == "paired":
                     if opts.format_of_data_list[index] == "fastq":
-                        fout.write("q1=%s\n" % (opts.paired_fastq_input1_list)[paired_read_index])
-                        fout.write("q2=%s\n" % (opts.paired_fastq_input2_list)[paired_read_index])
+                        fout.write("q1=%s\n" % opts.paired_fastq_input1_list[fastq_paired_read_index])
+                        fout.write("q2=%s\n" % opts.paired_fastq_input2_list[fastq_paired_read_index])
+                        fastq_paired_read_index = + 1
+                    elif opts.format_of_data_list[index] == "fastq_gzipped":
+                        print "Ok here in fastq_gzipped!"
+                        #Copy file into temp directory and give it a gz suffix
+                        shutil.copy2(opts.paired_fastq_gzipped_input1_list[fastq_gz_paired_read_index], opts.paired_fastq_gzipped_input1_list[fastq_gz_paired_read_index] + '.fq.gz')
+                        shutil.copy2(opts.paired_fastq_gzipped_input2_list[fastq_gz_paired_read_index], opts.paired_fastq_gzipped_input2_list[fastq_gz_paired_read_index] + '.fq.gz')
+                        fout.write("q1=" + "%s.fq.gz\n" % opts.paired_fastq_gzipped_input1_list[fastq_gz_paired_read_index])
+                        fout.write("q2=" + "%s.fq.gz\n" % opts.paired_fastq_gzipped_input2_list[fastq_gz_paired_read_index])
+                        fastq_gz_paired_read_index = + 1
                     elif opts.format_of_data_list[index] == "fasta":
-                        fout.write("f1=%s\n" % opts.paired_fasta_input1_list[paired_read_index])
-                        fout.write("f2=%s\n" % opts.paired_fasta_input2_list[paired_read_index])
+                        fout.write("f1=%s\n" % opts.paired_fasta_input1_list[fasta_paired_read_index])
+                        fout.write("f2=%s\n" % opts.paired_fasta_input2_list[fasta_paired_read_index])
+                        fasta_paired_read_index = + 1
+                    elif opts.format_of_data_list[index] == "fasta_gzipped":
+                        print "Ok here!"
+                        #Copy file into temp directory and give it a gz suffix
+                        shutil.copy2(opts.paired_fasta_gzipped_input1_list[fasta_gz_paired_read_index], opts.paired_fasta_gzipped_input1_list[fasta_gz_paired_read_index] + '.fa.gz')
+                        shutil.copy2(opts.paired_fasta_gzipped_input2_list[fasta_gz_paired_read_index], opts.paired_fasta_gzipped_input2_list[fasta_gz_paired_read_index] + '.fa.gz')
+                        fout.write("f1=" + "%s.fa.gz\n" % opts.paired_fasta_gzipped_input1_list[fasta_gz_paired_read_index])
+                        fout.write("f2=" + "%s.fa.gz\n" % opts.paired_fasta_gzipped_input2_list[fasta_gz_paired_read_index])
+                        fasta_gz_paired_read_index = + 1
                     else:
-                        fout.write("b1=%s\n" % opts.paired_fasta_input1_list[paired_read_index])
-                        fout.write("b2=%s\n" % opts.paired_fasta_input2_list[paired_read_index])
-                    paired_read_index = paired_read_index + 1
+                        fout.write("b1=%s\n" % opts.paired_fasta_input1_list[bam_paired_read_index])
+                        fout.write("b2=%s\n" % opts.paired_fasta_input2_list[bam_paired_read_index])
+                        bam_paired_read_index = + 1
+                    paired_read_index += 1
             fout.close()
         except Exception, e:
             stop_err("config file cannot be opened for writing" + str(e))
 
     if opts.default_full_settings_type == "default":
-        cmd = "SOAPdenovo-63mer_v2.0 all -s %s -o %s" % (config_file, tmp_dir + "/result")
+        if int(opts.kmer_size) <= 63:
+            #Hardcoded param p to set thread number
+            cmd = "SOAPdenovo-63mer_v2.0 all -s %s -o %s -K %s -p %s -d %s" % (config_file, tmp_dir + "/result", opts.kmer_size, ncpu, opts.kmer_freq_cutoff)
+            if opts.resolve_repeats == "YES":
+                cmd = cmd + " -R"
+            if opts.fill_gaps == "YES":
+                cmd = cmd + " -F"
+        elif int(opts.kmer_size) > 63:
+            cmd = "SOAPdenovo-127mer_v2.0 all -s %s -o %s -K %s -p %s -d %s" % (config_file, tmp_dir + "/result", opts.kmer_size, ncpu, opts.kmer_freq_cutoff)
+            if opts.resolve_repeats == "YES":
+                cmd = cmd + " -R"
+            if opts.fill_gaps == "YES":
+                cmd = cmd + " -F"
     elif opts.default_full_settings_type == "full":
         #Check important params
+        #Commented out for testing contig saureus step
         if int(opts.max_k) <= int(opts.kmer_size):
             sys.stderr.write("Problem: The value for the maximum kmer parameter has to be an odd value and higher than the kmer size.\n\n")
         if int(opts.kmer_r2c) < int(opts.kmer_size):
             sys.stderr.write("Problem: The kmer size used for mapping reads to contigs should be at least equal to the kmer size or higher.\n\n")
-        #kmer size is only set in full param analysis
         if int(opts.kmer_size) <= 63:
-            cmd = "SOAPdenovo-63mer_v2.0 all -s %s -o %s -K %s -p %s -a %s -d %s -R %s -D %s -M %s -m %s -e %s -E %s -k %s -F %s -u %s -w %s -G %s -L %s -c %s -C %s -b %s -B %s -N %s -V %s" % (config_file, tmp_dir + "/result", opts.kmer_size, opts.ncpu, opts.init_memory_assumption, opts.kmer_freq_cutoff, opts.resolve_repeats, opts.edge_cov_cutoff, opts.merge_level, opts.max_k, opts.weight, opts.merge_clean_bubble, opts.kmer_r2c, opts.fill_gaps, opts.unmask_contigs, opts.keep_contigs_connected, opts.gap_len_diff, opts.min_contig_len, opts.min_contig_cvg, opts.max_contig_cvg, opts.insert_size_upper_bound, opts.bubble_coverage, opts.genome_size, opts.ass_visual)
+            cmd = "SOAPdenovo-63mer_v2.0 all -s %s -o %s -K %s -p %s -a %s -d %s -D %s -M %s -m %s -e %s -E %s -k %s -u %s -w %s -G %s -L %s -c %s -C %s -b %s -B %s -N %s -V %s" % (config_file, tmp_dir + "/result", opts.kmer_size, ncpu, opts.init_memory_assumption, opts.kmer_freq_cutoff, opts.edge_cov_cutoff, opts.merge_level, opts.max_k, opts.weight, opts.merge_clean_bubble, opts.kmer_r2c, opts.unmask_contigs, opts.keep_contigs_connected, opts.gap_len_diff, opts.min_contig_len, opts.min_contig_cvg, opts.max_contig_cvg, opts.insert_size_upper_bound, opts.bubble_coverage, opts.genome_size, opts.ass_visual)
+            if opts.resolve_repeats == "YES":
+                cmd = cmd + " -R"
+            if opts.fill_gaps == "YES":
+                cmd = cmd + " -F"
         elif int(opts.kmer_size) > 63:
-            cmd = "SOAPdenovo-127mer_v2.0 all -s %s -o %s -K %s -p %s -a %s -d %s -R %s -D %s -M %s -m %s -e %s -E %s -k %s -F %s -u %s -w %s -G %s -L %s -c %s -C %s -b %s -B %s -N %s -V %s" % (config_file, tmp_dir + "/result", opts.kmer_size, opts.ncpu, opts.init_memory_assumption, opts.kmer_freq_cutoff, opts.resolve_repeats, opts.edge_cov_cutoff, opts.merge_level, opts.max_k, opts.weight, opts.merge_clean_bubble, opts.kmer_r2c, opts.fill_gaps, opts.unmask_contigs, opts.keep_contigs_connected, opts.gap_len_diff, opts.min_contig_len, opts.min_contig_cvg, opts.max_contig_cvg, opts.insert_size_upper_bound, opts.bubble_coverage, opts.genome_size, opts.ass_visual)
+            cmd = "SOAPdenovo-127mer_v2.0 all -s %s -o %s -K %s -p %s -a %s -d %s -D %s -M %s -m %s -e %s -E %s -k %s -u %s -w %s -G %s -L %s -c %s -C %s -b %s -B %s -N %s -V %s" % (config_file, tmp_dir + "/result", opts.kmer_size, ncpu, opts.init_memory_assumption, opts.kmer_freq_cutoff, opts.edge_cov_cutoff, opts.merge_level, opts.max_k, opts.weight, opts.merge_clean_bubble, opts.kmer_r2c, opts.unmask_contigs, opts.keep_contigs_connected, opts.gap_len_diff, opts.min_contig_len, opts.min_contig_cvg, opts.max_contig_cvg, opts.insert_size_upper_bound, opts.bubble_coverage, opts.genome_size, opts.ass_visual)
+            if opts.resolve_repeats == "YES":
+                cmd = cmd + " -R"
+            if opts.fill_gaps == "YES":
+                cmd = cmd + " -F"
 
         #print cmd
 
@@ -192,24 +270,24 @@ def main():
         raise Exception, 'Problem performing SOAPdenovo2 process ' + str(e)
 
     #Read SOAPdenovo2 results into outputs
-    contig_out = open(opts.contig, 'wb')
-    file = open(tmp_dir + '/result.contig')
-    for line in file:
+    contig_out = open(opts.contig, 'w')
+    f = open(tmp_dir + '/result.contig')
+    for line in f:
         contig_out.write(line)
     contig_out.close()
 
-    scafseq_out = open(opts.scafseq, 'wb')
-    file = open(tmp_dir + '/result.scafSeq')
-    for line in file:
+    scafseq_out = open(opts.scafseq, 'w')
+    f = open(tmp_dir + '/result.scafSeq')
+    for line in f:
         scafseq_out.write(line)
     scafseq_out.close()
 
-    config_out = open(opts.config, 'wb')
-    file = open(config_file)
-    for line in file:
+    config_out = open(opts.config, 'w')
+    f = open(config_file)
+    for line in f:
         config_out.write(line)
     config_out.close()
-    file.close()
+    f.close()
 
     #Clean up temp files
     cleanup_before_exit(tmp_dir)

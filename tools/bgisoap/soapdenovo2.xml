@@ -12,7 +12,7 @@
             ##Select configuration from history
             --configuration=$config_source.own_file
         #else:
-            ##Create new config file
+            ## Create config file
             ## Parameters required in config file
             ## Maximum read length
             --max_read_length=$config_source.max_read_length
@@ -40,8 +40,12 @@
                     --format_of_data=$i.data_type.data_format.fastq_fasta
                     #if $i.data_type.data_format.fastq_fasta == "fastq"
                         --single_fastq_input1=$i.data_type.data_format.input1
+                    #else if $i.data_type.data_format.fastq_fasta == "fastq_gzipped"
+                        --single_fastq_gzipped_input1=$i.data_type.data_format.input1
                     #else if $i.data_type.data_format.fastq_fasta == "fasta"
                         --single_fasta_input1=$i.data_type.data_format.input1
+                    #else if $i.data_type.data_format.fastq_fasta == "fasta_gzipped"
+                        --single_fasta_gzipped_input1=$i.data_type.data_format.input1
                     #else
                         --single_bam_input1=$i.data_type.data_format.input1
                     #end if
@@ -50,9 +54,15 @@
                     #if $i.data_type.data_format.fastq_fasta == "fastq"
                         --paired_fastq_input1=$i.data_type.data_format.input1
                         --paired_fastq_input2=$i.data_type.data_format.input2
+                    #else if $i.data_type.data_format.fastq_fasta == "fastq_gzipped"
+                        --paired_fastq_gzipped_input1=$i.data_type.data_format.input1
+                        --paired_fastq_gzipped_input2=$i.data_type.data_format.input2
                     #else if $i.data_type.data_format.fastq_fasta == "fasta"
                         --paired_fasta_input1=$i.data_type.data_format.input1
                         --paired_fasta_input2=$i.data_type.data_format.input2
+                    #else if $i.data_type.data_format.fastq_fasta == "fasta_gzipped"
+                        --paired_fasta_gzipped_input1=$i.data_type.data_format.input1
+                        --paired_fasta_gzipped_input2=$i.data_type.data_format.input2
                     #else
                         --paired_bam_input1=$i.data_type.data_format.input1
                         --paired_bam_input2=$i.data_type.data_format.input2
@@ -61,23 +71,26 @@
             #end for
         #end if
 
+        ## Mandatory params
+        --kmer_size=$kmer_size
+        ## Commented out to keep control of thread number
+        ##--ncpu=$ncpu
+        --kmer_freq_cutoff=$kmer_freq_cutoff
+        --resolve_repeats=$resolve_repeats
+        --fill_gaps=$fill_gaps
+
         ## Check if using default or custom parameters
         --default_full_settings_type=$default_full_settings.settings_type
         #if $default_full_settings.settings_type == "full"
-            --kmer_size=$default_full_settings.kmer_size
-            --ncpu=$default_full_settings.ncpu
             --init_memory_assumption=$default_full_settings.init_memory_assumption
-            --kmer_freq_cutoff=$default_full_settings.kmer_freq_cutoff
-            --resolve_repeats=$default_full_settings.resolve_repeats
             --edge_cov_cutoff=$default_full_settings.edge_cov_cutoff
             --merge_level=$default_full_settings.merge_level
             --max_k=$default_full_settings.max_k
+            --merge_clean_bubble=$default_full_settings.merge_clean_bubble
             --weight=$default_full_settings.weight
             ##--keep_avail_read=$default_full_settings.keep_avail_read
-            --merge_clean_bubble=$default_full_settings.merge_clean_bubble
             ##--output_gap_related_reads=$default_full_settings.output_gap_related_reads
             --kmer_r2c=$default_full_settings.kmer_r2c
-            --fill_gaps=$default_full_settings.fill_gaps
             --unmask_contigs=$default_full_settings.unmask_contigs
             --keep_contigs_connected=$default_full_settings.keep_contigs_connected
             --gap_len_diff=$default_full_settings.gap_len_diff
@@ -162,7 +175,9 @@
                                    type="select"
                                    label="What is the format of your sequence data?">
                                 <option value="fastq">FASTQ</option>
+                                <option value="fastq_gzipped">FASTQ_GZIPPED</option>
                                 <option value="fasta">FASTA</option>
+                                <option value="fasta_gzipped">FASTA_GZIPPED</option>
                                 <option value="bam">BAM</option>
                             </param>
                             <when value="fastq">
@@ -177,6 +192,18 @@
                                        label="Reverse FASTQ file">
                                 </param>
                             </when>
+                            <when value="fastq_gzipped">
+                                <param name="input1"
+                                       type="data"
+                                       format="input"
+                                       label="Forward FASTQ Gzipped file">
+                                </param>
+                                <param name="input2"
+                                       type="data"
+                                       format="input"
+                                       label="Reverse FASTQ Gzipped file">
+                                </param>
+                            </when>
                             <when value="fasta">
                                 <param name="input1"
                                        type="data"
@@ -187,6 +214,18 @@
                                        type="data"
                                        format="input"
                                        label="Reverse FASTA file">
+                                </param>
+                            </when>
+                            <when value="fasta_gzipped">
+                                <param name="input1"
+                                       type="data"
+                                       format="input"
+                                       label="Forward FASTA Gzipped file">
+                                </param>
+                                <param name="input2"
+                                       type="data"
+                                       format="input"
+                                       label="Reverse FASTA Gzipped file">
                                 </param>
                             </when>
                             <when value="bam">
@@ -209,7 +248,9 @@
                                    type="select"
                                    label="What type of data are you using?">
                                 <option value="fastq">FASTQ</option>
+                                <option value="fastq_gzipped">FASTQ_GZIPPED</option>
                                 <option value="fasta">FASTA</option>
+                                <option value="fasta_gzipped">FASTA_GZIPPED</option>
                                 <option value="bam">BAM</option>
                             </param>
                             <when value="fastq">
@@ -219,11 +260,25 @@
                                        label="Forward FASTQ file">
                                 </param>
                             </when>
+                            <when value="fastq_gzipped">
+                                <param name="input1"
+                                       type="data"
+                                       format="input"
+                                       label="Forward FASTQ Gzipped file">
+                                </param>
+                            </when>
                             <when value="fasta">
                                 <param name="input1"
                                        type="data"
                                        format="input"
                                        label="Forward FASTA file">
+                                </param>
+                            </when>
+                            <when value="fasta_gzipped">
+                                <param name="input1"
+                                       type="data"
+                                       format="input"
+                                       label="Forward FASTA Gzipped file">
                                 </param>
                             </when>
                             <when value="bam">
@@ -239,31 +294,18 @@
             </repeat>
         </when>
         </conditional>
-        <!--Other parameters -->
-        <conditional name="default_full_settings">
-        <param name="settings_type"
-               type="select"
-               label="SOAP settings to use"
-               help="Default settings is suitable for most mapping needs. If you want full control, use Full parameter list">
-            <option value="default">Default</option>
-            <option value="full">Full parameter list</option>
-        </param>
-        <when value="default"/>
-        <when value="full">
+        <!-- Mandatory parameters -->
         <param name="kmer_size"
                type="integer"
                value="23"
                label="k-value in kmer"
                min="13"
                max="127"/>
-        <param name="ncpu"
-               type="integer"
-               value="2"
-               label="Number of CPUs"/>
-        <param name="init_memory_assumption"
-               type="integer"
-               label="Initiate memory assumption to avoid further reallocation, unit G"
-                value="0"/>
+        <!-- Commented out to keep control of thread number -->
+        <!--<param name="ncpu"-->
+               <!--type="integer"-->
+               <!--value="2"-->
+               <!--label="Number of CPUs"/>-->
         <param name="kmer_freq_cutoff"
                type="integer"
                value="0"
@@ -275,6 +317,27 @@
             <option value="NO">No</option>
             <option value="YES">Yes</option>
         </param>
+        <param name="fill_gaps"
+               type="select"
+               label="Fill gaps in scaffold?">
+            <option value="NO">No</option>
+            <option value="YES">Yes</option>
+        </param>
+
+        <conditional name="default_full_settings">
+        <param name="settings_type"
+               type="select"
+               label="SOAP settings to use"
+               help="Default settings is suitable for most mapping needs. If you want full control, use Full parameter list">
+            <option value="default">Default</option>
+            <option value="full">Full parameter list</option>
+        </param>
+        <when value="default"/>
+        <when value="full">
+        <param name="init_memory_assumption"
+               type="integer"
+               label="Initiate memory assumption to avoid further reallocation, unit G"
+                value="0"/>
         <param name="edge_cov_cutoff"
                type="integer"
                value="1"
@@ -283,10 +346,10 @@
                type="select"
                value="1"
                label="Strength of merging similar sequences during contig process">
-            <option value="0">0</option>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
+            <option value="0">0</option>
         </param>
         <param name="max_k"
                type="integer"
@@ -303,6 +366,7 @@
                optional="true"
                label="Keep available read (*.read)"/>
         -->
+
         <param name="merge_clean_bubble"
                type="text"
                optional="true"
@@ -323,12 +387,6 @@
                min="13"
                max="63"
                label="kmer size for mapping reads to contigs">
-        </param>
-        <param name="fill_gaps"
-               type="select"
-               label="Fill gaps in scaffold?">
-            <option value="NO">No</option>
-            <option value="YES">Yes</option>
         </param>
         <param name="unmask_contigs"
                type="select"

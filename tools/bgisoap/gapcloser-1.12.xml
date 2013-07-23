@@ -292,12 +292,12 @@
         <data name="scaff"
               type="data"
               format="txt"
-              label="gapclo.scaff">
+              label="gapclo.scaffolds">
         </data>
         <data name="fill_info"
               type="data"
               format="tabular"
-              label="Information about closed gaps">
+              label="closed.gaps.info">
         </data>
     </outputs>
     <!--<tests>-->

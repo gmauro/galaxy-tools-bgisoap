@@ -93,9 +93,9 @@ def main():
 
     #Set up command line call - need to remove hard coded path
     if opts.space_consecutive_settings_type == "consecutive":
-        cmd = "KmerFreq_AR %s -k %s -c %s -t %s >%s 2>%s" % (config_file, opts.kmer_size, opts.min_precision_kmer_rate, thread_num, tmp_out_file, tmp_err_file)
+        cmd = "KmerFreq_AR_v2.0 %s -k %s -c %s -t %s >%s 2>%s" % (config_file, opts.kmer_size, opts.min_precision_kmer_rate, thread_num, tmp_out_file, tmp_err_file)
     elif opts.space_consecutive_settings_type == "space":
-        cmd = "KmerFreq_AR %s -k %s -s %s -c %s -t %s >%s 2>%s" % (config_file, opts.kmer_size, opts.kmer_space_seed_size, opts.min_precision_kmer_rate, thread_num, tmp_out_file, tmp_err_file)
+        cmd = "KmerFreq_AR_v2.0 %s -k %s -s %s -c %s -t %s >%s 2>%s" % (config_file, opts.kmer_size, opts.kmer_space_seed_size, opts.min_precision_kmer_rate, thread_num, tmp_out_file, tmp_err_file)
 
     #print "Command executed: ", cmd
 

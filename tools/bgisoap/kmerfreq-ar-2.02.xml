@@ -8,42 +8,44 @@
 
         --format_of_data=$data_format.fastq_fasta
         #if $data_format.fastq_fasta == "fastq"
-            #for $i in $data_format.libraries
-                --paired_fastq_input1=$i.input1
-                --paired_fastq_input2=$i.input2
-            #end for
+          #for $i in $data_format.libraries
+            --paired_fastq_input1=$i.input1
+            --paired_fastq_input2=$i.input2
+          #end for
         #else
-            #for $i in $data_format.libraries
-                --paired_fasta_input1=$i.input1
-                --paired_fasta_input2=$i.input2
-            #end for
+          #for $i in $data_format.libraries
+            --paired_fasta_input1=$i.input1
+            --paired_fasta_input2=$i.input2
+          #end for
         #end if
 
         ## Check if performing consecutive or space processing
         --space_consecutive_settings_type=$space_consecutive_settings.space_consecutive_settings_type
         #if $space_consecutive_settings.space_consecutive_settings_type == "consecutive"
-            --kmer_size=$space_consecutive_settings.kmer_size
-            --min_precision_kmer_rate=$space_consecutive_settings.min_precision_kmer_rate
-            --thread_num=$space_consecutive_settings.thread_num
+          --kmer_size=$space_consecutive_settings.kmer_size
+          --min_precision_kmer_rate=$space_consecutive_settings.min_precision_kmer_rate
+          ##Commented out to keep under local control
+          ##--thread_num=$space_consecutive_settings.thread_num
         #else
-            --kmer_size=$space_consecutive_settings.kmer_size
-            --kmer_space_seed_size=$space_consecutive_settings.kmer_space_seed_size
-            --min_precision_kmer_rate=$space_consecutive_settings.min_precision_kmer_rate
-            --thread_num=$space_consecutive_settings.thread_num
+          --kmer_size=$space_consecutive_settings.kmer_size
+          --kmer_space_seed_size=$space_consecutive_settings.kmer_space_seed_size
+          --min_precision_kmer_rate=$space_consecutive_settings.min_precision_kmer_rate
+          ##Commented out to keep under local control
+          ##--thread_num=$space_consecutive_settings.thread_num
         #end if
 
         ## Output files
         --filelist=$filelist
         #if $space_consecutive_settings.space_consecutive_settings_type == "consecutive"
-            --stat=$stat
-            --cz_len=$cz_len
-            --cz=$cz
-            --genome_estimate=$genome_estimate
+          --stat=$stat
+          --cz_len=$cz_len
+          --cz=$cz
+          --genome_estimate=$genome_estimate
         #else
-            --stat=$space_stat
-            --cz_len=$space_cz_len
-            --cz=$space_cz
-            --genome_estimate=$space_genome_estimate
+          --stat=$space_stat
+          --cz_len=$space_cz_len
+          --cz=$space_cz
+          --genome_estimate=$space_genome_estimate
         #end if
 
     </command>
@@ -95,11 +97,12 @@
                        value="13"
                        label="Kmer size"
                        help="Kmer size should be set between 13 and 27"/>
-                <param name="thread_num"
-                       type="integer"
-                       value="1"
-                       label="Number of threads to use"
-                       help="For increasing processing speed of KmerFreq. This param should be less than the number of available CPU cores"/>
+                <!-- Commented out to keep under local control -->
+                <!--<param name="thread_num"-->
+                       <!--type="integer"-->
+                       <!--value="1"-->
+                       <!--label="Number of threads to use"-->
+                       <!--help="For increasing processing speed of KmerFreq. This param should be less than the number of available CPU cores"/>-->
                 <param name="min_precision_kmer_rate"
                        type="integer"
                        value="-1"
@@ -117,11 +120,12 @@
                        value="1"
                        label="Size of space-seed in kmer"
                        help="For space-kmer processing, this option should be set to an even number when kmer size is an odd number for reverse and complement kmer. When kmer size is an even number, the space-kmer format will be like this (for k=10, s=5): 'ATTCG-----GTACG'. When kmer size is an odd number, the space-kmer format will be like this (for k=11, s=4): "/>
-                <param name="thread_num"
-                       type="integer"
-                       value="1"
-                       label="Number of threads to use"
-                       help="For increasing processing speed of KmerFreq. This param should be less than the number of available CPU cores"/>
+                <!-- Commented out to keep under local control -->
+                <!--<param name="thread_num"-->
+                       <!--type="integer"-->
+                       <!--value="1"-->
+                       <!--label="Number of threads to use"-->
+                       <!--help="For increasing processing speed of KmerFreq. This param should be less than the number of available CPU cores"/>-->
                 <param name="min_precision_kmer_rate"
                        type="integer"
                        value="-1"

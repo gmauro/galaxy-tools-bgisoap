@@ -23,6 +23,8 @@ def cleanup_before_exit(tmp_dir):
 
 
 def main():
+    thread_num = 4
+
     #Parse command line
     parser = optparse.OptionParser()
     #Make list of params
@@ -40,7 +42,8 @@ def main():
     parser.add_option("-k", "--kmer_size", dest="kmer_size")
     parser.add_option("-s", "--kmer_space_seed_size", dest="kmer_space_seed_size")
     parser.add_option("-c", "--min_precision_kmer_rate", dest="min_precision_kmer_rate")
-    parser.add_option("-t", "--thread_num", dest="thread_num")
+    # parser.add_option("-t", "--thread_num", dest="thread_num") #Keep under local control
+
     # parser.add_option("-q", "--ascii_shift", dest="ascii_shift")
     # parser.add_option("-m", "--output_depth", dest="output_depth")
     # parser.add_option("-b", "--use_num_bases", dest="use_num_bases")
@@ -55,7 +58,6 @@ def main():
 
     #Create temp directory for performing analysis
     tmp_dir = tempfile.mkdtemp(prefix="tmp-kmerfreq-ar-")
-    print "Temp dir: ", tmp_dir
 
     #Create temp file for configuration
     config_file = tempfile.NamedTemporaryFile(dir=tmp_dir).name
@@ -91,11 +93,9 @@ def main():
 
     #Set up command line call - need to remove hard coded path
     if opts.space_consecutive_settings_type == "consecutive":
-        cmd = "KmerFreq_AR %s -k %s -c %s -t %s >%s 2>%s" % (config_file, opts.kmer_size, opts.min_precision_kmer_rate, opts.thread_num, tmp_out_file, tmp_err_file)
+        cmd = "KmerFreq_AR %s -k %s -c %s -t %s >%s 2>%s" % (config_file, opts.kmer_size, opts.min_precision_kmer_rate, thread_num, tmp_out_file, tmp_err_file)
     elif opts.space_consecutive_settings_type == "space":
-        cmd = "KmerFreq_AR %s -k %s" % (config_file, opts.kmer_size)
-        cmd = cmd + " -s %s -c %s -t %s >%s 2>%s" % \
-              (opts.kmer_space_seed_size, opts.min_precision_kmer_rate, opts.thread_num, tmp_out_file, tmp_err_file)
+        cmd = "KmerFreq_AR %s -k %s -s %s -c %s -t %s >%s 2>%s" % (config_file, opts.kmer_size, opts.kmer_space_seed_size, opts.min_precision_kmer_rate, thread_num, tmp_out_file, tmp_err_file)
 
     #print "Command executed: ", cmd
 
@@ -135,36 +135,36 @@ def main():
     #Read KmerFreq results into outputs
     stat_out = open(opts.stat, 'w')
     if opts.space_consecutive_settings_type == "consecutive":
-        file = open(tmp_dir + '/output.freq.stat')
+        f = open(tmp_dir + '/output.freq.stat')
     elif opts.space_consecutive_settings_type == "space":
-        file = open(tmp_dir + '/output.space.freq.stat')
-    for line in file:
+        f = open(tmp_dir + '/output.space.freq.stat')
+    for line in f:
         stat_out.write(line)
     stat_out.close()
-    file.close()
+    f.close()
 
     cz_len_out = open(opts.cz_len, 'w')
     if opts.space_consecutive_settings_type == "consecutive":
-        file = open(tmp_dir + '/output.freq.cz.len')
+        f = open(tmp_dir + '/output.freq.cz.len')
     elif opts.space_consecutive_settings_type == "space":
-        file = open(tmp_dir + '/output.space.freq.cz.len')
-    for line in file:
+        f = open(tmp_dir + '/output.space.freq.cz.len')
+    for line in f:
         cz_len_out.write(line)
     cz_len_out.close()
-    file.close()
+    f.close()
 
     if opts.space_consecutive_settings_type == "consecutive":
         freq_out = open(opts.cz, 'wb')
-        with open(tmp_dir + "/output.freq.cz", mode='rb') as file: # b is important -> binary
-            fileContent = file.read()
+        with open(tmp_dir + "/output.freq.cz", mode='rb') as f:  # b is important -> binary
+            fileContent = f.read()
             freq_out.write(fileContent)
     elif opts.space_consecutive_settings_type == "space":
         freq_out = open(opts.cz, 'wb')
-        with open(tmp_dir + "/output.space.freq.cz", mode='rb') as file: # b is important -> binary
-            fileContent = file.read()
+        with open(tmp_dir + "/output.space.freq.cz", mode='rb') as f:  # b is important -> binary
+            fileContent = f.read()
             freq_out.write(fileContent)
         freq_out.close()
-        file.close()
+        f.close()
 
     filelist_out = open(opts.filelist, 'w')
     read_list_handle = open(config_file, 'r')
@@ -175,16 +175,16 @@ def main():
 
     if opts.space_consecutive_settings_type == "consecutive":
         genome_estimate_out = open(opts.genome_estimate, 'w')
-        with open(tmp_dir + "/output.genome_estimate", mode='r') as file:
-            fileContent = file.read()
+        with open(tmp_dir + "/output.genome_estimate", mode='r') as f:
+            fileContent = f.read()
             genome_estimate_out.write(fileContent)
     elif opts.space_consecutive_settings_type == "space":
         genome_estimate_out = open(opts.genome_estimate, 'w')
-        with open(tmp_dir + "/output.space.genome_estimate", mode='r') as file:
-            fileContent = file.read()
+        with open(tmp_dir + "/output.space.genome_estimate", mode='r') as f:
+            fileContent = f.read()
             genome_estimate_out.write(fileContent)
         genome_estimate_out.close()
-        file.close()
+        f.close()
 
     #Clean up temp files
     cleanup_before_exit(tmp_dir)

@@ -452,18 +452,18 @@
         <data name="contig"
               type="data"
               format="txt"
-              label="SOAPdvo2: Contigs">
+              label="soapdvo2.contigs">
         </data>
         <data name="scafseq"
               type="data"
               format="txt"
-              label="SOAPdvo2: Scaffolds">
+              label="soapdvo2.Scaffolds">
         </data>
         <!-- Provide config file in case its required for GapCloser -->
         <data name="config"
               type="data"
               format="txt"
-              label="SOAPdvo2: CONFIG">
+              label="soapdvo2.config">
         </data>
     </outputs>
     <tests>

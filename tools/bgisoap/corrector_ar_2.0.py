@@ -32,6 +32,8 @@ def html_report_from_directory(html_out, dir):
     html_out.write('</font>\n</body>\n</html>\n')
 
 def main():
+    thread_num =4
+
     #Parse command line
     parser = optparse.OptionParser()
     #List of mandatory inputs and params
@@ -43,7 +45,8 @@ def main():
     parser.add_option("-k", "--kmer_size", dest="kmer_size")
     parser.add_option("-l", "--consec_low_freq_cutoff", dest="consec_low_freq_cutoff")
     parser.add_option("-Q", "--ascii_shift_quality_value", dest="ascii_shift_quality_value")
-    parser.add_option("-t", "--thread_num", dest="thread_num")
+    #Removed from galaxy interface to keep under own control
+    #parser.add_option("-t", "--thread_num", dest="thread_num")
     parser.add_option("", "--space_freq_cz", dest="space_freq_cz")
     parser.add_option("", "--space_freq_cz_len", dest="space_freq_cz_len")
     parser.add_option("-K", "--space_kmer", dest="space_kmer")
@@ -79,7 +82,6 @@ def main():
 
     #Temp directory for data processing
     tmp_dir = tempfile.mkdtemp(prefix="tmp-corrector-")
-    print tmp_dir
 
     #Run Corrector
     rex = re.compile('database/(.*)/dataset_')
@@ -103,13 +105,13 @@ def main():
     if opts.space_consecutive_settings_type == "consecutive" and opts.default_full_settings_type == "default":
         cmd = "Corrector_AR_v2.0 -k %s -l %s -Q %s -t %s %s %s %s" % (opts.kmer_size, opts.consec_low_freq_cutoff, opts.ascii_shift_quality_value, opts.thread_num, opts.freq_cz, opts.freq_cz_len, opts.filelist)
     if opts.space_consecutive_settings_type == "consecutive" and opts.default_full_settings_type == "full":
-        cmd = "Corrector_AR_v2.0 -k %s -l %s -Q %s -t %s -c %s -n %s -a %s -e %s -w %s -q %s -m %s -j %s -o %s %s %s %s" % (opts.kmer_size, opts.consec_low_freq_cutoff, opts.ascii_shift_quality_value, opts.thread_num, opts.max_read_change, opts.max_node_num, opts.remove_suspicious_data, opts.trim_suspicious_end_regions_Q, opts.trim_error_bases_Q, opts.qual_threshold_error_bases, opts.min_length_high_freq_region, opts.convert_reads_into_paired_end_file, opts.output_format, opts.freq_cz, opts.freq_cz_len, opts.filelist)
+        cmd = "Corrector_AR_v2.0 -k %s -l %s -Q %s -t %s -c %s -n %s -a %s -e %s -w %s -q %s -m %s -j %s -o %s %s %s %s" % (opts.kmer_size, opts.consec_low_freq_cutoff, opts.ascii_shift_quality_value, thread_num, opts.max_read_change, opts.max_node_num, opts.remove_suspicious_data, opts.trim_suspicious_end_regions_Q, opts.trim_error_bases_Q, opts.qual_threshold_error_bases, opts.min_length_high_freq_region, opts.convert_reads_into_paired_end_file, opts.output_format, opts.freq_cz, opts.freq_cz_len, opts.filelist)
         if opts.length_trim_low_qual_ends != "":
             cmd =  cmd + " -x %s" % opts.length_trim_low_qual_ends
     if opts.space_consecutive_settings_type == "space" and opts.default_full_settings_type == "default":
-        cmd = "Corrector_AR_v2.0 -k %s -l %s -K %s -s %s -L %s -Q %s -t %s %s %s %s %s %s" % (opts.kmer_size, opts.consec_low_freq_cutoff, opts.space_kmer, opts.space_seed, opts.space_low_freq_cutoff, opts.ascii_shift_quality_value, opts.thread_num, opts.freq_cz, opts.freq_cz_len, opts.space_freq_cz, opts.freq_cz_len, opts.filelist)
+        cmd = "Corrector_AR_v2.0 -k %s -l %s -K %s -s %s -L %s -Q %s -t %s %s %s %s %s %s" % (opts.kmer_size, opts.consec_low_freq_cutoff, opts.space_kmer, opts.space_seed, opts.space_low_freq_cutoff, opts.ascii_shift_quality_value, thread_num, opts.freq_cz, opts.freq_cz_len, opts.space_freq_cz, opts.freq_cz_len, opts.filelist)
     if opts.space_consecutive_settings_type == "space" and opts.default_full_settings_type == "full":
-        cmd = "Corrector_AR_v2.0 -k %s -l %s -K %s -s %s -L %s -Q %s -t %s -c %s -n %s -a %s -e %s -w %s -q %s -m %s -j %s -o %s %s %s %s %s %s" % (opts.kmer_size, opts.consec_low_freq_cutoff, opts.space_kmer, opts.space_seed, opts.space_low_freq_cutoff, opts.ascii_shift_quality_value, opts.thread_num, opts.max_read_change, opts.max_node_num, opts.remove_suspicious_data, opts.trim_suspicious_end_regions_Q, opts.trim_error_bases_Q, opts.qual_threshold_error_bases, opts.min_length_high_freq_region, opts.convert_reads_into_paired_end_file, opts.output_format, opts.freq_cz, opts.freq_cz_len, opts.space_freq_cz, opts.freq_cz_len, opts.filelist)
+        cmd = "Corrector_AR_v2.0 -k %s -l %s -K %s -s %s -L %s -Q %s -t %s -c %s -n %s -a %s -e %s -w %s -q %s -m %s -j %s -o %s %s %s %s %s %s" % (opts.kmer_size, opts.consec_low_freq_cutoff, opts.space_kmer, opts.space_seed, opts.space_low_freq_cutoff, opts.ascii_shift_quality_value, thread_num, opts.max_read_change, opts.max_node_num, opts.remove_suspicious_data, opts.trim_suspicious_end_regions_Q, opts.trim_error_bases_Q, opts.qual_threshold_error_bases, opts.min_length_high_freq_region, opts.convert_reads_into_paired_end_file, opts.output_format, opts.freq_cz, opts.freq_cz_len, opts.space_freq_cz, opts.freq_cz_len, opts.filelist)
         if opts.length_trim_low_qual_ends != "":
             cmd =  cmd + " -x %s" % opts.length_trim_low_qual_ends
 

@@ -18,7 +18,8 @@
             --kmer_size=$space_consecutive_settings.kmer_size
             --consec_low_freq_cutoff=$space_consecutive_settings.consec_low_freq_cutoff
             --ascii_shift_quality_value=$space_consecutive_settings.ascii_shift_quality_value
-            --thread_num=$space_consecutive_settings.thread_num
+            ##Remove from galaxy interface
+            ##--thread_num=$space_consecutive_settings.thread_num
         #else
             --filelist=$space_consecutive_settings.filelist
             --freq_cz=$space_consecutive_settings.freq_cz
@@ -32,7 +33,8 @@
             --space_seed=$space_consecutive_settings.space_seed
             --space_low_freq_cutoff=$space_consecutive_settings.space_low_freq_cutoff
             --ascii_shift_quality_value=$space_consecutive_settings.ascii_shift_quality_value
-            --thread_num=$space_consecutive_settings.thread_num
+            ##Remove from galaxy interface
+            ##--thread_num=$space_consecutive_settings.thread_num
         #end if
 
         ## Check if using default or full parameters
@@ -95,11 +97,12 @@
                        value="64"
                        label="ASCII shift of the quality value"
                        help="This value should be set as 64 or 33 for Illumina data"/>
-                <param name="thread_num"
-                       type="integer"
-                       value="1"
-                       label="Number of threads to use"
-                       help="For increasing processing speed of Corrector. This param should be less than the number of available CPU cores"/>
+                <!-- Remove from galaxy interface -->
+                <!--<param name="thread_num"-->
+                       <!--type="integer"-->
+                       <!--value="1"-->
+                       <!--label="Number of threads to use"-->
+                       <!--help="For increasing processing speed of Corrector. This param should be less than the number of available CPU cores"/>-->
             </when>
             <when value="space">
                 <!-- Inputs -->

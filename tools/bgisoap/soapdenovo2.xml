@@ -457,7 +457,7 @@
         <data name="scafseq"
               type="data"
               format="txt"
-              label="soapdvo2.Scaffolds">
+              label="soapdvo2.scaffolds">
         </data>
         <!-- Provide config file in case its required for GapCloser -->
         <data name="config"

@@ -60,6 +60,7 @@
         ##Outputs for forward and reverse files
         --corrected_forward=$corrected_forward
         --corrected_reverse=$corrected_reverse
+        --corrected_single=$corrected_single
     </command>
     <inputs>
         <conditional name="space_consecutive_settings">
@@ -287,6 +288,28 @@
         <data name="corrected_reverse"
               format="fa.gz"
               label="corr.reverse.reads">
+            <filter>output_format=="0"</filter>
+        </data>
+
+        <!-- For outputting cor.single.fq.gz file -->
+        <data name="corrected_single"
+              format="fastq"
+              label="corr.single.reads">
+            <filter>output_format=="3"</filter>
+        </data>
+        <data name="corrected_single"
+              format="fasta"
+              label="corr.single.reads">
+            <filter>output_format=="2"</filter>
+        </data>
+        <data name="corrected_single"
+              format="fq.gz"
+              label="corr.single.reads">
+            <filter>output_format=="1"</filter>
+        </data>
+        <data name="corrected_single"
+              format="fa.gz"
+              label="corr.single.reads">
             <filter>output_format=="0"</filter>
         </data>
     </outputs>

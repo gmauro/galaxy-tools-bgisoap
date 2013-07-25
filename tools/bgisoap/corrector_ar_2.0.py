@@ -74,6 +74,7 @@ def main():
     #Outputs for reads
     parser.add_option("", "--corrected_forward", dest="corrected_forward")
     parser.add_option("", "--corrected_reverse", dest="corrected_reverse")
+    parser.add_option("", "--corrected_single", dest="corrected_single")
     opts, args = parser.parse_args()
 
     #Create directory to process and store Corrector outputs
@@ -91,7 +92,7 @@ def main():
     #Get second to last token
     userId = tokens[len(tokens) - 2]
     files_dir = rex.sub("database/files/" + userId + "/dataset_", job_work_dir)
-    files_dir = files_dir + "/"
+    files_dir += "/"
     #print "New html dir: ", files_dir
     #Create directory
     if not os.path.exists(files_dir):
@@ -107,13 +108,13 @@ def main():
     if opts.space_consecutive_settings_type == "consecutive" and opts.default_full_settings_type == "full":
         cmd = "Corrector_AR_v2.0 -k %s -l %s -Q %s -t %s -c %s -n %s -a %s -e %s -w %s -q %s -m %s -j %s -o %s %s %s %s" % (opts.kmer_size, opts.consec_low_freq_cutoff, opts.ascii_shift_quality_value, thread_num, opts.max_read_change, opts.max_node_num, opts.remove_suspicious_data, opts.trim_suspicious_end_regions_Q, opts.trim_error_bases_Q, opts.qual_threshold_error_bases, opts.min_length_high_freq_region, opts.convert_reads_into_paired_end_file, opts.output_format, opts.freq_cz, opts.freq_cz_len, opts.filelist)
         if opts.length_trim_low_qual_ends != "":
-            cmd =  cmd + " -x %s" % opts.length_trim_low_qual_ends
+            cmd += " -x %s" % opts.length_trim_low_qual_ends
     if opts.space_consecutive_settings_type == "space" and opts.default_full_settings_type == "default":
         cmd = "Corrector_AR_v2.0 -k %s -l %s -K %s -s %s -L %s -Q %s -t %s %s %s %s %s %s" % (opts.kmer_size, opts.consec_low_freq_cutoff, opts.space_kmer, opts.space_seed, opts.space_low_freq_cutoff, opts.ascii_shift_quality_value, thread_num, opts.freq_cz, opts.freq_cz_len, opts.space_freq_cz, opts.freq_cz_len, opts.filelist)
     if opts.space_consecutive_settings_type == "space" and opts.default_full_settings_type == "full":
         cmd = "Corrector_AR_v2.0 -k %s -l %s -K %s -s %s -L %s -Q %s -t %s -c %s -n %s -a %s -e %s -w %s -q %s -m %s -j %s -o %s %s %s %s %s %s" % (opts.kmer_size, opts.consec_low_freq_cutoff, opts.space_kmer, opts.space_seed, opts.space_low_freq_cutoff, opts.ascii_shift_quality_value, thread_num, opts.max_read_change, opts.max_node_num, opts.remove_suspicious_data, opts.trim_suspicious_end_regions_Q, opts.trim_error_bases_Q, opts.qual_threshold_error_bases, opts.min_length_high_freq_region, opts.convert_reads_into_paired_end_file, opts.output_format, opts.freq_cz, opts.freq_cz_len, opts.space_freq_cz, opts.freq_cz_len, opts.filelist)
         if opts.length_trim_low_qual_ends != "":
-            cmd =  cmd + " -x %s" % opts.length_trim_low_qual_ends
+            cmd += " -x %s" % opts.length_trim_low_qual_ends
 
     #print "Command executed: ", cmd
 
@@ -168,17 +169,16 @@ def main():
     elif opts.default_full_settings_type == "full":
         if opts.output_format == "0":
             fileformat = ".fa.gz"
-        elif opts.output_format =="1":
+        elif opts.output_format == "1":
             fileformat = ".fq.gz"
-        elif opts.output_format =="2":
+        elif opts.output_format == "2":
             fileformat = ".fa"
-        elif opts.output_format =="3":
+        elif opts.output_format == "3":
             fileformat = ".fq"
 
     #Read file paths in read.lst
     pair_index = 1
     for path in filelist:
-        #print "path:", path
         #Read corrected forward and reverse files into outputs
         source = path.rstrip() + ".cor.pair_" + str(pair_index) + fileformat
         if fnmatch.fnmatch(source, '*pair_1*'):
@@ -188,6 +188,16 @@ def main():
             corrected_forward_in.write(data)
             corrected_forward_in.close()
             file_out.close()
+
+            #Deal with single.gz file
+            source_single = path.rstrip() + ".cor.single" + fileformat
+            if fnmatch.fnmatch(source_single, '*single*'):
+                corrected_single_in = open(opts.corrected_single, 'w')
+                file_out2 = open(source_single, 'r')
+                data = file_out2.read()
+                corrected_single_in.write(data)
+                corrected_single_in.close()
+                file_out2.close()
         elif fnmatch.fnmatch(source, '*pair_2*'):
             corrected_reverse_in = open(opts.corrected_reverse, 'w')
             file_out = open(source, 'r')
@@ -200,25 +210,19 @@ def main():
         source = path.rstrip() + ".cor.stat"
         shutil.move(source, files_dir)
 
-        #Move cor single fq gz files to html dir if present
-        source = path.rstrip() + ".cor.single.fq.gz"
-        #Check file is present
-        if os.path.isfile(source):
-            shutil.move(source, files_dir)
-
         #Move cor pair single stat files to html dir if present
         source = path.rstrip() + ".cor.pair.single.stat"
         #Check file is present
         if os.path.isfile(source):
             shutil.move(source, files_dir)
 
-        pair_index = pair_index + 1
+        pair_index += 1
         if pair_index == 3:
             pair_index = 1
     filelist.close()
 
     #Generate html
-    html_report_from_directory(open(html_file, 'wb'), files_dir)
+    html_report_from_directory(open(html_file, 'w'), files_dir)
 
     #Clean up temp files
     cleanup_before_exit(tmp_dir)

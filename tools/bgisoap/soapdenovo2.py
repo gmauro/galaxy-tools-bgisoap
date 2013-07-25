@@ -163,7 +163,6 @@ def main():
                         fout.write("q2=%s\n" % opts.paired_fastq_input2_list[fastq_paired_read_index])
                         fastq_paired_read_index = + 1
                     elif opts.format_of_data_list[index] == "fastq_gzipped":
-                        print "Ok here in fastq_gzipped!"
                         #Copy file into temp directory and give it a gz suffix
                         shutil.copy2(opts.paired_fastq_gzipped_input1_list[fastq_gz_paired_read_index], opts.paired_fastq_gzipped_input1_list[fastq_gz_paired_read_index] + '.fq.gz')
                         shutil.copy2(opts.paired_fastq_gzipped_input2_list[fastq_gz_paired_read_index], opts.paired_fastq_gzipped_input2_list[fastq_gz_paired_read_index] + '.fq.gz')
@@ -175,7 +174,6 @@ def main():
                         fout.write("f2=%s\n" % opts.paired_fasta_input2_list[fasta_paired_read_index])
                         fasta_paired_read_index = + 1
                     elif opts.format_of_data_list[index] == "fasta_gzipped":
-                        print "Ok here!"
                         #Copy file into temp directory and give it a gz suffix
                         shutil.copy2(opts.paired_fasta_gzipped_input1_list[fasta_gz_paired_read_index], opts.paired_fasta_gzipped_input1_list[fasta_gz_paired_read_index] + '.fa.gz')
                         shutil.copy2(opts.paired_fasta_gzipped_input2_list[fasta_gz_paired_read_index], opts.paired_fasta_gzipped_input2_list[fasta_gz_paired_read_index] + '.fa.gz')
@@ -196,15 +194,15 @@ def main():
             #Hardcoded param p to set thread number
             cmd = "SOAPdenovo-63mer_v2.0 all -s %s -o %s -K %s -p %s -d %s" % (config_file, tmp_dir + "/result", opts.kmer_size, ncpu, opts.kmer_freq_cutoff)
             if opts.resolve_repeats == "YES":
-                cmd = cmd + " -R"
+                cmd += " -R"
             if opts.fill_gaps == "YES":
-                cmd = cmd + " -F"
+                cmd += " -F"
         elif int(opts.kmer_size) > 63:
             cmd = "SOAPdenovo-127mer_v2.0 all -s %s -o %s -K %s -p %s -d %s" % (config_file, tmp_dir + "/result", opts.kmer_size, ncpu, opts.kmer_freq_cutoff)
             if opts.resolve_repeats == "YES":
-                cmd = cmd + " -R"
+                cmd += " -R"
             if opts.fill_gaps == "YES":
-                cmd = cmd + " -F"
+                cmd += " -F"
     elif opts.default_full_settings_type == "full":
         #Check important params
         #Commented out for testing contig saureus step
@@ -215,15 +213,15 @@ def main():
         if int(opts.kmer_size) <= 63:
             cmd = "SOAPdenovo-63mer_v2.0 all -s %s -o %s -K %s -p %s -a %s -d %s -D %s -M %s -m %s -e %s -E %s -k %s -u %s -w %s -G %s -L %s -c %s -C %s -b %s -B %s -N %s -V %s" % (config_file, tmp_dir + "/result", opts.kmer_size, ncpu, opts.init_memory_assumption, opts.kmer_freq_cutoff, opts.edge_cov_cutoff, opts.merge_level, opts.max_k, opts.weight, opts.merge_clean_bubble, opts.kmer_r2c, opts.unmask_contigs, opts.keep_contigs_connected, opts.gap_len_diff, opts.min_contig_len, opts.min_contig_cvg, opts.max_contig_cvg, opts.insert_size_upper_bound, opts.bubble_coverage, opts.genome_size, opts.ass_visual)
             if opts.resolve_repeats == "YES":
-                cmd = cmd + " -R"
+                cmd += " -R"
             if opts.fill_gaps == "YES":
-                cmd = cmd + " -F"
+                cmd += " -F"
         elif int(opts.kmer_size) > 63:
             cmd = "SOAPdenovo-127mer_v2.0 all -s %s -o %s -K %s -p %s -a %s -d %s -D %s -M %s -m %s -e %s -E %s -k %s -u %s -w %s -G %s -L %s -c %s -C %s -b %s -B %s -N %s -V %s" % (config_file, tmp_dir + "/result", opts.kmer_size, ncpu, opts.init_memory_assumption, opts.kmer_freq_cutoff, opts.edge_cov_cutoff, opts.merge_level, opts.max_k, opts.weight, opts.merge_clean_bubble, opts.kmer_r2c, opts.unmask_contigs, opts.keep_contigs_connected, opts.gap_len_diff, opts.min_contig_len, opts.min_contig_cvg, opts.max_contig_cvg, opts.insert_size_upper_bound, opts.bubble_coverage, opts.genome_size, opts.ass_visual)
             if opts.resolve_repeats == "YES":
-                cmd = cmd + " -R"
+                cmd += " -R"
             if opts.fill_gaps == "YES":
-                cmd = cmd + " -F"
+                cmd += " -F"
 
         #print cmd
 

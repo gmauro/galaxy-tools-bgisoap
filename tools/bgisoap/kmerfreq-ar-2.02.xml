@@ -26,12 +26,20 @@
           --min_precision_kmer_rate=$space_consecutive_settings.min_precision_kmer_rate
           ##Commented out to keep under local control
           ##--thread_num=$space_consecutive_settings.thread_num
+
+          --ascii_shift=$space_consecutive_settings.ascii_shift
+          --output_depth=$space_consecutive_settings.output_depth
+          --use_num_bases=$space_consecutive_settings.use_num_bases
         #else
           --kmer_size=$space_consecutive_settings.kmer_size
           --kmer_space_seed_size=$space_consecutive_settings.kmer_space_seed_size
           --min_precision_kmer_rate=$space_consecutive_settings.min_precision_kmer_rate
           ##Commented out to keep under local control
           ##--thread_num=$space_consecutive_settings.thread_num
+
+          --ascii_shift=$space_consecutive_settings.ascii_shift
+          --output_depth=$space_consecutive_settings.output_depth
+          --use_num_bases=$space_consecutive_settings.use_num_bases
         #end if
 
         ## Output files
@@ -108,6 +116,27 @@
                        value="-1"
                        label="Minimum precision kmer rate"
                        help="KmerFreq AR calculates the precision of kmer based on the quality score. Set between 0 and 0.99, or -1 for unrestrained"/>
+                <param name="ascii_shift"
+                       type="select"
+                       value="33"
+                       label="ASCII shift of the quality value"
+                       help="Usually 64 or 33 for Illumina data">
+                    <option value="64">64</option>
+                    <option value="33">33</option>
+                </param>
+                <param name="output_depth"
+                       type="select"
+                       value="1"
+                       label="Output kmers depth file?">
+                    <option value="1">YES</option>
+                    <option value="0">NO</option>
+                </param>
+                <param name="use_num_bases"
+                       type="integer"
+                       optional="true"
+                       value=""
+                       label="Total bases number used to get kmers"
+                       help="When sequencing depth is too much, you can set this option, about 30X data bases is preferred"/>
             </when>
             <when value="space">
                 <param name="kmer_size"
@@ -131,6 +160,27 @@
                        value="-1"
                        label="Minimum precision kmer rate"
                        help="KmerFreq AR calculates the precision of kmer based on the quality score. Set between 0 and 0.99, or -1 for unrestrained"/>
+                <param name="ascii_shift"
+                       type="select"
+                       value="33"
+                       label="ASCII shift of the quality value"
+                       help="Usually 64 or 33 for Illumina data">
+                    <option value="64">64</option>
+                    <option value="33">33</option>
+                </param>
+                <param name="output_depth"
+                       type="select"
+                       value="1"
+                       label="Output kmers depth file?">
+                    <option value="1">YES</option>
+                    <option value="0">NO</option>
+                </param>
+                <param name="use_num_bases"
+                       type="integer"
+                       optional="true"
+                       value=""
+                       label="Total bases number used to get kmers"
+                       help="When sequencing depth is too much, you can set this option, about 30X data bases is preferred"/>
             </when>
         </conditional>
     </inputs>

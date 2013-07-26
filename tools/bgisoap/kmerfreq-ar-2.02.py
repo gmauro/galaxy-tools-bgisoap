@@ -44,9 +44,9 @@ def main():
     parser.add_option("-c", "--min_precision_kmer_rate", dest="min_precision_kmer_rate")
     # parser.add_option("-t", "--thread_num", dest="thread_num") #Keep under local control
 
-    # parser.add_option("-q", "--ascii_shift", dest="ascii_shift")
-    # parser.add_option("-m", "--output_depth", dest="output_depth")
-    # parser.add_option("-b", "--use_num_bases", dest="use_num_bases")
+    parser.add_option("-q", "--ascii_shift", dest="ascii_shift")
+    parser.add_option("-m", "--output_depth", dest="output_depth")
+    parser.add_option("-b", "--use_num_bases", dest="use_num_bases")
 
     #Outputs
     parser.add_option("", "--stat", dest='stat', help="Statistical information")
@@ -93,11 +93,18 @@ def main():
 
     #Set up command line call - need to remove hard coded path
     if opts.space_consecutive_settings_type == "consecutive":
-        cmd = "KmerFreq_AR_v2.0 %s -k %s -c %s -t %s >%s 2>%s" % (config_file, opts.kmer_size, opts.min_precision_kmer_rate, thread_num, tmp_out_file, tmp_err_file)
-    elif opts.space_consecutive_settings_type == "space":
-        cmd = "KmerFreq_AR_v2.0 %s -k %s -s %s -c %s -t %s >%s 2>%s" % (config_file, opts.kmer_size, opts.kmer_space_seed_size, opts.min_precision_kmer_rate, thread_num, tmp_out_file, tmp_err_file)
+        cmd = "KmerFreq_AR_v2.0 %s -k %s -c %s -t %s -q %s -m %s" % (config_file, opts.kmer_size, opts.min_precision_kmer_rate, thread_num, opts.ascii_shift, opts.output_depth)
+        if opts.use_num_bases != "":
+            cmd += " -b %s" % opts.use_num_bases
+        cmd += " >%s 2>%s" % (tmp_out_file, tmp_err_file)
 
-    #print "Command executed: ", cmd
+    elif opts.space_consecutive_settings_type == "space":
+        cmd = "KmerFreq_AR_v2.0 %s -k %s -s %s -c %s -t %s -q %s -m %s" % (config_file, opts.kmer_size, opts.kmer_space_seed_size, opts.min_precision_kmer_rate, thread_num, opts.ascii_shift, opts.output_depth)
+        if opts.use_num_bases != "":
+            cmd += " -b %s" % opts.use_num_bases
+        cmd += " >%s 2>%s" % (tmp_out_file, tmp_err_file)
+
+    print "Command executed: ", cmd
 
     try:
         #Call Kmerfreq_AR

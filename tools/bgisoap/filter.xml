@@ -20,7 +20,8 @@
             --trim_flag=$default_full_settings.trim_flag
             --quality_shift=$default_full_settings.quality_shift
             --reads_pair_number=$default_full_settings.reads_pair_number
-            --num_threads=$default_full_settings.num_threads
+            ##Keep under local control
+            ##--num_threads=$default_full_settings.num_threads
             --filter_low_quality_bases=$default_full_settings.filter_low_quality_bases
             --library_insert_size=$default_full_settings.library_insert_size
             --filter_percent_N_bases=$default_full_settings.filter_percent_N_bases
@@ -87,21 +88,22 @@
                 </param>
                 <param name="quality_shift"
                        type="select"
-                       value="64"
+                       value="33"
                        label="Quality shift value">
-                    <option value="64">64</option>
                     <option value="33">33</option>
+                    <option value="64">64</option>
                 </param>
                 <param name="reads_pair_number"
                        type="integer"
                        value="2000000"
                        label="Number of paired reads in buffer">
                 </param>
-                <param name="num_threads"
-                       type="integer"
-                       value="8"
-                       label="Number of threads to be used in processing">
-                </param>
+                <!-- Keep under local control -->
+                <!--<param name="num_threads"-->
+                       <!--type="integer"-->
+                       <!--value="8"-->
+                       <!--label="Number of threads to be used in processing">-->
+                <!--</param>-->
                 <param name="filter_low_quality_bases"
                        type="integer"
                        value="40"
@@ -152,10 +154,10 @@
                 </param>
                 <param name="compress_output_read_file"
                        type="select"
-                       value="yes"
+                       value="no"
                        label="Compress results?">
-                    <option value="yes">Yes</option>
                     <option value="no">No</option>
+                    <option value="yes">Yes</option>
                 </param>
             </when>
         </conditional>

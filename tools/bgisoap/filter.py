@@ -4,7 +4,13 @@ A wrapper script for Filter tool from SOAPdenovo2
 Peter Li peter@gigasciencejournal.com
 """
 
-import sys, optparse, os, tempfile, shutil, subprocess
+import sys
+import optparse
+import os
+import tempfile
+import shutil
+import subprocess
+
 
 def stop_err(msg):
     sys.stderr.write('%s\n' % msg)
@@ -15,6 +21,8 @@ def cleanup_before_exit(tmp_dir):
         shutil.rmtree(tmp_dir)
 
 def __main__():
+    num_threads = 4
+
     #Parse command line
     parser = optparse.OptionParser()
     #Generic input params
@@ -31,7 +39,7 @@ def __main__():
     parser.add_option("-f", "--trim_flag", dest="trim_flag", help="Trim flag")
     parser.add_option("-q", "--quality_shift", dest="quality_shift", help="Quality shift value")
     parser.add_option("-m", "--reads_pair_number", dest="reads_pair_number", help="Number of read pairs in buffer")
-    parser.add_option("-t", "--num_threads", dest="num_threads", help="Number of threads to use")
+    # parser.add_option("-t", "--num_threads", dest="num_threads", help="Number of threads to use")
     parser.add_option("-B", "--filter_low_quality_bases", dest="filter_low_quality_bases", help="Filter low quality bases")
     parser.add_option("-l", "--library_insert_size", dest="library_insert_size", help="Library insert size")
     parser.add_option("-w", "--filter_percent_N_bases", dest="filter_percent_N_bases", help="Percentage cutoff of N bases to filter")
@@ -56,36 +64,37 @@ def __main__():
         cmd = "SOAPfilter_v2.0 %s %s %s %s %s" % (opts.read1, opts.read2, opts.stat, opts.read1_clean, opts.read2_clean)
     elif opts.default_full_settings_type == "full":
         #Create cmd string
-        cmd = "SOAPfilter_v2.0 -t %s -m %s" % (opts.num_threads, opts.reads_pair_number)
+        cmd = "SOAPfilter_v2.0 -t %s -m %s" % (num_threads, opts.reads_pair_number)
 
         if opts.filter_reads_with_adapter_seq == "yes":
-            cmd =  cmd + " -y -F %s -R %s" % (opts.read1_adapter_seq, opts.read2_adapter_seq)
+            cmd += " -y -F %s -R %s" % (opts.read1_adapter_seq, opts.read2_adapter_seq)
 
         if opts.filter_small_reads == "yes":
-            cmd =  cmd + " -z"
+            cmd += " -z"
 
         if opts.filter_PCR_duplications == "yes":
-            cmd =  cmd + " -p"
+            cmd += " -p"
 
         if opts.compress_output_read_file == "yes":
-            cmd =  cmd + " -g"
+            cmd += " -g"
 
-        cmd =  cmd + " -f %s" % (opts.trim_flag)
+        cmd += " -f %s" % opts.trim_flag
 
-        if opts.read1_5prime_trim_length != 0:
-            cmd =  cmd + " -a %s" % opts.read1_5prime_trim_length
+        # if opts.read1_5prime_trim_length != 0:
+        cmd += " -a %s" % opts.read1_5prime_trim_length
 
-        if opts.read1_3prime_trim_length != 0:
-            cmd =  cmd + " -b %s" % (opts.read1_3prime_trim_length)
+        # if opts.read1_3prime_trim_length != 0:
+        cmd += " -b %s" % opts.read1_3prime_trim_length
 
-        if opts.read2_5prime_trim_length > 0:
-            cmd =  cmd + " -c %s" % (opts.read2_5prime_trim_length)
+        # if opts.read2_5prime_trim_length > 0:
+        cmd += " -c %s" % opts.read2_5prime_trim_length
 
-        if opts.read2_3prime_trim_length > 0:
-            cmd =  cmd + " -d %s" % (opts.read2_3prime_trim_length)
+        # if opts.read2_3prime_trim_length > 0:
+        cmd += " -d %s" % opts.read2_3prime_trim_length
 
-        cmd = cmd + " -q %s -B %s -l %s -w %s %s %s %s %s %s" % (opts.quality_shift, opts.filter_low_quality_bases, opts.library_insert_size, opts.filter_percent_N_bases, opts.read1, opts.read2, opts.stat, opts.read1_clean, opts.read2_clean)
+        cmd += " -q %s -B %s -l %s -w %s %s %s %s %s %s" % (opts.quality_shift, opts.filter_low_quality_bases, opts.library_insert_size, opts.filter_percent_N_bases, opts.read1, opts.read2, opts.stat, opts.read1_clean, opts.read2_clean)
 
+        print cmd
     #Run
     try:
         tmp_out_file = tempfile.NamedTemporaryFile(dir=tmp_dir).name
@@ -120,11 +129,12 @@ def __main__():
         stop_err('Error in running Filter from %s' % (str(e)))
 
     #Clean up temp files
-    cleanup_before_exit(tmp_dir)
+    #cleanup_before_exit(tmp_dir)
     #Check results in output file
     if os.path.getsize(opts.stat) > 0:
         sys.stdout.write('Status complete')
     else:
         stop_err("The output is empty")
 
-if __name__ == "__main__": __main__()
+if __name__ == "__main__":
+    __main__()

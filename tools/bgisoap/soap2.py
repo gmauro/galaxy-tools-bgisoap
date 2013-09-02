@@ -53,13 +53,13 @@ def __main__():
 
     #Set up command line call
     if opts.analysis_settings_type == "single" and opts.default_full_settings_type == "default":
-        cmd = "soap2 -a %s -D " % opts.forward_set + ref_index_filename + " -o %s" % (opts.alignment_out)
+        cmd = "soap -a %s -D " % opts.forward_set + ref_index_filename + " -o %s" % (opts.alignment_out)
     elif opts.analysis_settings_type == "paired" and opts.default_full_settings_type == "default":
-        cmd = "soap2 -a %s -b %s -D " % (opts.forward_set, opts.reverse_set) + ref_index_filename + " -o %s -2 %s -m %s -x %s" % (opts.alignment_out, opts.unpaired_alignment_out, opts.min_insert_size, opts.max_insert_size)
+        cmd = "soap -a %s -b %s -D " % (opts.forward_set, opts.reverse_set) + ref_index_filename + " -o %s -2 %s -m %s -x %s" % (opts.alignment_out, opts.unpaired_alignment_out, opts.min_insert_size, opts.max_insert_size)
     elif opts.analysis_settings_type == "single" and opts.default_full_settings_type == "full":
-        cmd = "soap2 -a %s -D " % opts.forward_set + ref_index_filename + " -o %s -n %s -t %s -r %s -v %s -M %s -p %s" % (opts.alignment_out, opts.filter, opts.read_id, opts.report_repeats, opts.allow_all_mismatches, opts.match_mode, opts.num_threads)
+        cmd = "soap -a %s -D " % opts.forward_set + ref_index_filename + " -o %s -n %s -t %s -r %s -v %s -M %s -p %s" % (opts.alignment_out, opts.filter, opts.read_id, opts.report_repeats, opts.allow_all_mismatches, opts.match_mode, opts.num_threads)
     elif opts.analysis_settings_type == "paired" and opts.default_full_settings_type == "full":
-        cmd = "soap2 -a %s -b %s -D " % (opts.forward_set, opts.reverse_set) + ref_index_filename + " -o %s -2 %s -m %s -x %s -n %s -t %s -r %s -v %s -M %s -p %s" % (opts.alignment_out, opts.unpaired_alignment_out, opts.min_insert_size, opts.max_insert_size, opts.filter, opts.read_id, opts.report_repeats, opts.allow_all_mismatches, opts.match_mode, opts.num_threads)
+        cmd = "soap -a %s -b %s -D " % (opts.forward_set, opts.reverse_set) + ref_index_filename + " -o %s -2 %s -m %s -x %s -n %s -t %s -r %s -v %s -M %s -p %s" % (opts.alignment_out, opts.unpaired_alignment_out, opts.min_insert_size, opts.max_insert_size, opts.filter, opts.read_id, opts.report_repeats, opts.allow_all_mismatches, opts.match_mode, opts.num_threads)
 
     #print cmd
 

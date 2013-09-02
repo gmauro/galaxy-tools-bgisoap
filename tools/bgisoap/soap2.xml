@@ -3,6 +3,7 @@
     <requirements>
         <requirement type="package">soap2</requirement>
     </requirements>
+    <version_command>soap 2&gt;&amp;1 | grep "Version: " | sed -e 's/Version: //' </version_command>
     <command interpreter="python">
         soap2.py
 

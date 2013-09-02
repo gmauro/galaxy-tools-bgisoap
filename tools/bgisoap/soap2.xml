@@ -123,13 +123,12 @@
                        value="2"
                        label="Allow all mismatches in a single read?"/>
                 <param name="match_mode"
-                       type="select"
-                       value="4">
+                       type="select">
                     <option value="0">Exact match only</option>
                     <option value="1">One mismatch only</option>
                     <option value="2">Two mismatches only</option>
                     <option value="3">Gap</option>
-                    <option value="4">Find best hits</option>
+                    <option value="4" selected="true">Find best hits</option>
                 </param>
                 <param name="num_threads"
                        type="integer"
